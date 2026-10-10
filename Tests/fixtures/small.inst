@@ -1,0 +1,2015 @@
+# Expected values written by an independent Python oracle (networkx network simplex, a scipy LP for
+# welfare, Bellman-Ford for prices) that was removed from the repository on 2026-10-08.
+# Frozen data: nothing regenerates these files. The format is in Tests/FixtureLoader.hpp.
+case small_000
+items 3
+ask 100 4 3 4 1 3 5 1 6 3 0 1 2
+ask 101 2 2 2 4 1 6 3 0 1 2
+bid 1000 3 1 4 1 2 1 2
+bid 1001 4 3 2 8 1 8 2 4 3 0 1 2
+bid 1002 3 3 1 5 2 3 3 1 3 0 1 2
+expect welfare 25
+expect volume 6
+expect ranksum 9
+expect prices 4 4 4
+end
+
+case small_001
+items 4
+ask 100 2 4 1 1 2 2 1 6 1 7 1 0
+ask 101 1 2 2 0 4 8 1 3
+ask 102 4 3 4 4 2 6 2 7 1 3
+ask 103 4 4 4 4 1 4 2 6 4 6 3 1 2 3
+bid 1000 1 3 4 7 1 4 4 4 1 1
+expect welfare 3
+expect volume 1
+expect ranksum 3
+expect prices none 4 none none
+end
+
+case small_002
+items 3
+ask 100 4 4 4 1 3 4 2 5 3 7 2 0 1
+bid 1000 2 3 2 8 3 7 3 7 1 0
+bid 1001 3 3 2 7 4 6 2 5 3 0 1 2
+bid 1002 4 3 1 7 1 7 1 3 3 0 1 2
+bid 1003 3 2 3 6 3 4 3 0 1 2
+bid 1004 4 4 3 8 1 5 3 5 4 1 3 0 1 2
+expect welfare 40
+expect volume 8
+expect ranksum 16
+expect prices 7 7 7
+end
+
+case small_003
+items 5
+ask 100 1 4 1 0 3 2 2 5 4 5 3 0 1 2
+ask 101 3 4 1 1 4 5 4 5 1 8 1 4
+ask 102 3 3 4 1 1 5 3 7 2 1 2
+ask 103 4 4 3 2 1 2 2 2 1 7 1 4
+bid 1000 3 4 4 7 3 6 4 5 1 1 4 0 2 3 4
+expect welfare 38
+expect volume 7
+expect ranksum 13
+expect prices 5 none 1 5 2
+end
+
+case small_004
+items 3
+ask 100 4 1 1 8 2 1 2
+bid 1000 4 4 4 7 4 5 3 3 2 2 1 2
+bid 1001 1 4 4 5 1 2 4 2 2 1 3 0 1 2
+bid 1002 1 4 3 8 3 4 1 3 4 1 3 0 1 2
+expect welfare 0
+expect volume 1
+expect ranksum 2
+expect prices 8 8 8
+end
+
+case small_005
+items 4
+ask 100 2 4 1 4 2 6 1 6 4 8 1 0
+bid 1000 3 2 1 5 1 4 1 0
+bid 1001 3 4 4 8 2 6 3 5 2 1 4 0 1 2 3
+bid 1002 1 2 2 6 2 2 4 0 1 2 3
+expect welfare 6
+expect volume 2
+expect ranksum 2
+expect prices 8 8 8 8
+end
+
+case small_006
+items 3
+ask 100 3 2 4 3 2 5 3 0 1 2
+ask 101 3 3 2 6 4 8 2 8 1 0
+ask 102 1 3 4 2 1 4 4 7 2 0 1
+bid 1000 3 3 4 8 4 5 3 5 1 0
+bid 1001 3 4 2 8 1 4 1 3 2 2 2 0 1
+bid 1002 2 3 3 5 4 5 3 1 3 0 1 2
+bid 1003 4 1 2 7 2 0 2
+expect welfare 33
+expect volume 8
+expect ranksum 14
+expect prices 5 5 5
+end
+
+case small_007
+items 5
+ask 100 4 1 2 2 1 0
+ask 101 1 2 1 0 1 8 1 0
+ask 102 4 3 1 1 2 5 3 7 1 2
+bid 1000 4 3 3 8 2 7 3 1 2 1 4
+bid 1001 4 4 4 8 1 8 2 1 4 1 2 2 4
+expect welfare 14
+expect volume 4
+expect ranksum 12
+expect prices none 8 7 none 8
+end
+
+case small_008
+items 6
+ask 100 1 2 2 5 1 6 2 0 5
+ask 101 2 4 1 0 1 1 4 4 1 6 2 2 5
+ask 102 3 1 3 7 1 0
+ask 103 3 3 1 0 4 3 3 8 3 0 1 5
+bid 1000 1 3 3 8 2 5 1 5 3 1 2 5
+bid 1001 4 2 2 6 2 5 1 0
+expect welfare 31
+expect volume 7
+expect ranksum 18
+expect prices 5 3 1 none none 1
+end
+
+case small_009
+items 4
+ask 100 1 1 2 1 2 0 2
+ask 101 2 4 1 0 3 2 2 4 1 6 2 0 3
+bid 1000 4 3 4 7 3 4 4 2 1 0
+expect welfare 18
+expect volume 3
+expect ranksum 2
+expect prices 7 none none none
+end
+
+case small_010
+items 3
+ask 100 2 3 1 0 4 1 4 5 2 0 1
+ask 101 4 2 1 3 3 5 2 0 1
+ask 102 4 4 2 0 3 1 2 4 4 8 1 0
+bid 1000 1 1 4 8 3 0 1 2
+bid 1001 4 4 1 8 3 7 3 5 4 1 2 0 1
+bid 1002 4 3 2 4 2 3 3 2 2 0 2
+expect welfare 51
+expect volume 10
+expect ranksum 19
+expect prices 4 5 8
+end
+
+case small_011
+items 3
+ask 100 4 3 2 1 2 2 3 7 2 1 2
+ask 101 2 1 4 7 1 2
+ask 102 1 2 4 0 1 8 3 0 1 2
+bid 1000 1 1 4 8 2 0 1
+bid 1001 4 3 4 8 4 3 2 2 1 2
+bid 1002 1 3 1 7 2 6 3 2 3 0 1 2
+bid 1003 4 2 3 6 3 1 1 0
+expect welfare 49
+expect volume 7
+expect ranksum 12
+expect prices 6 6 6
+end
+
+case small_012
+items 3
+ask 100 4 4 1 2 2 4 1 6 3 7 3 0 1 2
+ask 101 2 2 3 2 2 2 2 0 1
+bid 1000 2 3 3 8 3 5 1 4 3 0 1 2
+bid 1001 3 4 2 8 3 5 3 5 3 1 3 0 1 2
+expect welfare 32
+expect volume 7
+expect ranksum 6
+expect prices 5 5 5
+end
+
+case small_013
+items 6
+ask 100 2 3 3 0 2 4 1 8 1 4
+ask 101 4 2 1 2 4 5 2 0 1
+ask 102 1 3 4 1 4 4 2 7 1 1
+ask 103 3 1 4 1 2 0 2
+bid 1000 3 1 1 4 1 0
+expect welfare 3
+expect volume 1
+expect ranksum 3
+expect prices 1 none none none none none
+end
+
+case small_014
+items 5
+ask 100 4 4 4 0 3 2 2 3 2 4 2 0 4
+ask 101 1 3 4 3 3 4 2 8 3 0 1 4
+ask 102 3 2 2 0 4 3 3 2 3 4
+bid 1000 4 3 2 7 4 6 1 3 4 1 2 3 4
+bid 1001 2 4 3 8 2 7 3 7 3 3 2 0 4
+bid 1002 1 3 3 8 2 7 2 2 2 1 4
+bid 1003 2 4 2 4 1 3 3 2 2 1 1 1
+expect welfare 69
+expect volume 13
+expect ranksum 20
+expect prices 2 4 3 3 3
+end
+
+case small_015
+items 6
+ask 100 3 3 1 6 3 7 1 8 3 0 1 3
+ask 101 3 1 2 0 3 1 2 3
+ask 102 4 1 3 8 3 0 3 5
+ask 103 4 2 4 0 4 8 1 1
+bid 1000 3 1 4 7 3 2 3 4
+bid 1001 3 3 1 7 1 4 1 2 3 1 4 5
+expect welfare 28
+expect volume 7
+expect ranksum 14
+expect prices none 0 7 7 7 0
+end
+
+case small_016
+items 5
+ask 100 1 2 1 3 3 5 2 0 3
+ask 101 1 4 3 1 1 1 4 4 4 5 2 0 3
+bid 1000 4 3 4 7 3 5 1 2 3 0 1 3
+bid 1001 4 3 2 8 4 6 1 1 4 0 1 2 4
+bid 1002 2 4 1 5 4 4 4 4 2 1 3 2 3 4
+expect welfare 20
+expect volume 4
+expect ranksum 4
+expect prices 7 7 7 7 7
+end
+
+case small_017
+items 3
+ask 100 4 2 4 2 1 6 3 0 1 2
+bid 1000 3 3 4 8 4 3 2 2 1 0
+bid 1001 1 1 1 7 1 2
+bid 1002 4 1 3 4 2 1 2
+bid 1003 2 4 2 7 2 6 4 6 2 1 3 0 1 2
+bid 1004 4 2 3 4 3 2 3 0 1 2
+expect welfare 24
+expect volume 5
+expect ranksum 4
+expect prices 7 7 7
+end
+
+case small_018
+items 2
+ask 100 3 2 2 3 4 7 2 0 1
+bid 1000 2 2 4 8 4 6 2 0 1
+bid 1001 2 4 4 8 4 8 3 8 1 3 1 0
+bid 1002 4 3 4 8 1 5 1 2 2 0 1
+expect welfare 14
+expect volume 6
+expect ranksum 3
+expect prices 8 8
+end
+
+case small_019
+items 5
+ask 100 1 4 2 5 1 6 3 6 3 8 2 2 3
+ask 101 2 3 2 3 2 4 4 7 3 0 2 3
+bid 1000 3 3 4 8 1 5 2 2 3 0 1 2
+bid 1001 2 3 4 8 2 5 2 3 4 0 1 2 3
+expect welfare 25
+expect volume 7
+expect ranksum 8
+expect prices 8 8 8 7 none
+end
+
+case small_020
+items 6
+ask 100 3 4 4 1 2 1 1 5 1 7 2 1 3
+ask 101 1 4 4 2 3 2 4 4 1 5 1 5
+ask 102 1 2 1 0 1 1 1 1
+bid 1000 1 1 1 8 2 2 5
+bid 1001 3 2 1 5 2 4 4 0 2 3 4
+bid 1002 3 3 2 8 2 7 1 4 3 1 4 5
+bid 1003 2 3 2 8 3 2 1 1 2 3 5
+bid 1004 2 1 1 5 1 5
+expect welfare 45
+expect volume 7
+expect ranksum 16
+expect prices 4 1 7 4 7 7
+end
+
+case small_021
+items 2
+ask 100 4 2 4 2 1 7 2 0 1
+ask 101 4 1 4 8 2 0 1
+bid 1000 2 2 1 5 4 4 1 1
+expect welfare 5
+expect volume 2
+expect ranksum 0
+expect prices none 2
+end
+
+case small_022
+items 3
+ask 100 1 2 4 2 2 2 3 0 1 2
+bid 1000 2 3 1 6 1 5 4 2 3 0 1 2
+bid 1001 1 2 4 5 3 5 2 0 1
+bid 1002 3 1 2 8 1 2
+bid 1003 4 2 1 8 3 7 1 1
+bid 1004 2 4 2 8 1 6 4 3 1 2 3 0 1 2
+expect welfare 18
+expect volume 3
+expect ranksum 9
+expect prices 8 8 8
+end
+
+case small_023
+items 3
+ask 100 4 2 3 1 4 2 3 0 1 2
+ask 101 3 4 1 2 2 3 4 3 1 8 1 0
+ask 102 2 2 2 6 2 6 3 0 1 2
+bid 1000 1 4 3 6 2 5 4 3 3 1 3 0 1 2
+bid 1001 3 2 3 7 4 2 3 0 1 2
+bid 1002 4 4 4 3 3 3 3 2 4 1 3 0 1 2
+expect welfare 32
+expect volume 10
+expect ranksum 14
+expect prices 3 3 3
+end
+
+case small_024
+items 3
+ask 100 1 1 2 4 1 0
+ask 101 3 2 3 3 2 8 1 1
+bid 1000 3 2 3 8 4 8 1 0
+expect welfare 4
+expect volume 1
+expect ranksum 0
+expect prices 8 none none
+end
+
+case small_025
+items 4
+ask 100 3 4 4 1 4 1 4 2 1 7 1 2
+ask 101 2 3 3 0 3 1 3 5 2 0 1
+ask 102 1 1 3 3 3 1 2 3
+ask 103 3 4 1 0 3 0 2 6 4 8 2 0 3
+bid 1000 2 1 3 1 4 0 1 2 3
+bid 1001 4 1 1 3 2 1 2
+expect welfare 6
+expect volume 4
+expect ranksum 7
+expect prices 0 0 0 0
+end
+
+case small_026
+items 5
+ask 100 4 2 3 0 1 2 2 3 4
+ask 101 3 2 1 2 2 6 1 1
+ask 102 4 2 3 2 4 5 1 3
+ask 103 4 3 4 2 1 7 1 8 2 0 4
+bid 1000 1 2 4 7 3 5 2 0 2
+bid 1001 2 2 3 4 3 4 1 1
+bid 1002 4 3 4 8 3 7 2 5 1 0
+expect welfare 26
+expect volume 5
+expect ranksum 22
+expect prices 7 4 7 none none
+end
+
+case small_027
+items 6
+ask 100 4 1 2 6 2 0 5
+ask 101 3 4 4 0 1 2 1 3 2 4 1 1
+ask 102 2 2 2 3 3 4 2 0 2
+bid 1000 4 4 3 6 4 3 2 2 1 2 2 3 4
+bid 1001 2 1 1 8 3 1 3 5
+bid 1002 4 3 4 5 1 4 4 4 2 0 3
+bid 1003 1 4 1 8 3 2 1 2 3 1 1 3
+bid 1004 3 3 3 5 2 3 1 1 2 0 2
+expect welfare 14
+expect volume 5
+expect ranksum 22
+expect prices 5 0 5 8 6 0
+end
+
+case small_028
+items 2
+ask 100 2 1 1 2 2 0 1
+ask 101 3 2 1 0 3 3 1 0
+ask 102 1 3 3 2 4 6 1 7 2 0 1
+ask 103 3 1 3 7 1 0
+bid 1000 1 3 4 7 2 4 1 3 1 0
+bid 1001 2 1 2 4 2 0 1
+expect welfare 11
+expect volume 3
+expect ranksum 5
+expect prices 2 2
+end
+
+case small_029
+items 3
+ask 100 4 4 3 0 3 3 1 5 4 8 3 0 1 2
+ask 101 1 2 4 0 1 5 3 0 1 2
+ask 102 2 1 4 4 3 0 1 2
+ask 103 3 2 2 5 1 7 2 0 2
+bid 1000 4 2 2 6 1 4 2 0 2
+bid 1001 4 3 3 7 3 7 2 6 1 0
+bid 1002 4 1 2 7 3 0 1 2
+bid 1003 4 3 1 5 3 4 3 3 3 0 1 2
+bid 1004 1 3 2 5 3 2 1 1 2 0 2
+expect welfare 52
+expect volume 13
+expect ranksum 33
+expect prices 4 4 4
+end
+
+case small_030
+items 6
+ask 100 3 2 2 1 4 8 1 2
+ask 101 1 2 2 0 2 3 1 5
+ask 102 1 1 1 1 2 2 5
+bid 1000 3 4 1 7 4 6 1 5 3 1 2 1 4
+bid 1001 3 3 3 5 2 4 2 4 2 2 5
+bid 1002 2 4 2 6 1 3 1 1 2 1 4 1 2 3 4
+bid 1003 4 3 4 5 4 4 2 4 2 0 5
+bid 1004 4 2 4 8 3 3 1 5
+expect welfare 25
+expect volume 4
+expect ranksum 15
+expect prices 5 7 5 5 7 8
+end
+
+case small_031
+items 2
+ask 100 1 2 2 3 3 6 1 0
+ask 101 3 4 2 2 2 3 2 3 4 6 1 0
+ask 102 3 1 3 8 2 0 1
+ask 103 3 1 2 0 1 0
+bid 1000 1 3 1 8 4 8 2 5 1 1
+bid 1001 3 2 3 8 1 5 2 0 1
+expect welfare 22
+expect volume 4
+expect ranksum 12
+expect prices 2 8
+end
+
+case small_032
+items 3
+ask 100 3 4 2 3 4 4 4 5 2 8 1 2
+ask 101 1 3 2 1 1 4 3 5 1 2
+ask 102 3 4 3 0 4 1 4 5 1 5 2 0 1
+ask 103 2 2 3 3 4 3 3 0 1 2
+bid 1000 1 4 4 7 3 4 4 4 3 2 2 0 1
+bid 1001 3 3 1 6 2 3 3 2 3 0 1 2
+bid 1002 3 4 1 5 1 5 2 3 1 1 2 0 2
+bid 1003 4 1 3 8 2 0 1
+expect welfare 47
+expect volume 12
+expect ranksum 42
+expect prices 3 3 3
+end
+
+case small_033
+items 3
+ask 100 2 1 2 2 2 0 2
+ask 101 3 4 3 0 1 1 2 4 2 7 3 0 1 2
+bid 1000 1 3 1 5 4 4 1 4 3 0 1 2
+bid 1001 4 4 1 6 2 5 4 4 2 2 3 0 1 2
+bid 1002 2 4 3 7 2 4 1 2 3 1 1 0
+bid 1003 4 1 1 2 3 0 1 2
+bid 1004 2 3 1 8 3 2 1 1 1 0
+expect welfare 34
+expect volume 8
+expect ranksum 17
+expect prices 4 4 4
+end
+
+case small_034
+items 2
+ask 100 2 4 3 4 3 4 1 5 1 6 2 0 1
+ask 101 2 2 4 2 2 2 1 0
+ask 102 1 4 4 3 3 5 1 5 1 8 1 0
+ask 103 2 2 1 4 2 5 1 1
+bid 1000 1 2 4 6 1 3 2 0 1
+bid 1001 2 4 1 7 4 6 4 5 4 2 1 0
+bid 1002 4 2 2 7 2 6 2 0 1
+bid 1003 1 1 2 1 1 1
+expect welfare 24
+expect volume 8
+expect ranksum 17
+expect prices 4 4
+end
+
+case small_035
+items 4
+ask 100 4 3 4 1 2 1 4 6 1 3
+ask 101 1 3 4 1 3 1 2 2 3 0 2 3
+ask 102 3 1 3 4 3 0 2 3
+bid 1000 3 2 1 7 2 2 4 0 1 2 3
+bid 1001 1 3 2 6 2 5 1 4 4 0 1 2 3
+bid 1002 3 4 3 8 1 7 2 4 1 3 4 0 1 2 3
+expect welfare 44
+expect volume 10
+expect ranksum 24
+expect prices 4 5 4 2
+end
+
+case small_036
+items 2
+ask 100 3 1 3 0 2 0 1
+ask 101 4 1 3 0 1 1
+ask 102 4 3 4 5 2 5 1 5 1 0
+ask 103 3 1 4 2 1 1
+bid 1000 3 3 2 3 2 1 1 1 2 0 1
+bid 1001 2 4 1 8 3 8 1 5 2 3 1 1
+bid 1002 2 1 2 4 2 0 1
+bid 1003 4 3 2 8 1 3 4 1 2 0 1
+bid 1004 4 4 4 7 1 3 3 2 2 1 2 0 1
+expect welfare 58
+expect volume 9
+expect ranksum 38
+expect prices 4 4
+end
+
+case small_037
+items 3
+ask 100 3 1 2 8 3 0 1 2
+ask 101 3 2 3 0 1 5 2 1 2
+bid 1000 3 4 4 6 1 6 1 5 1 4 2 0 2
+bid 1001 3 4 3 6 2 5 4 4 4 1 3 0 1 2
+bid 1002 3 3 4 5 2 3 3 3 3 0 1 2
+bid 1003 4 2 1 6 1 2 3 0 1 2
+expect welfare 19
+expect volume 4
+expect ranksum 5
+expect prices 6 6 6
+end
+
+case small_038
+items 4
+ask 100 4 4 2 1 1 2 4 6 4 7 2 0 3
+bid 1000 2 2 4 8 1 4 4 0 1 2 3
+expect welfare 22
+expect volume 4
+expect ranksum 0
+expect prices 6 6 6 6
+end
+
+case small_039
+items 6
+ask 100 1 4 2 0 2 1 2 2 1 8 3 2 3 5
+ask 101 2 1 2 8 1 2
+bid 1000 2 4 3 8 2 7 1 3 2 3 2 1 4
+bid 1001 1 4 3 8 1 6 4 5 4 4 1 4
+expect welfare 0
+expect volume 0
+expect ranksum 0
+expect prices none 8 none none 8 none
+end
+
+case small_040
+items 4
+ask 100 2 1 1 0 2 2 3
+bid 1000 3 4 4 5 4 4 1 4 2 1 2 2 3
+bid 1001 3 1 1 4 2 0 1
+expect welfare 5
+expect volume 1
+expect ranksum 0
+expect prices 4 4 5 5
+end
+
+case small_041
+items 2
+ask 100 1 2 2 1 4 4 1 0
+ask 101 1 3 1 0 3 7 1 8 2 0 1
+bid 1000 2 3 1 8 4 8 4 7 1 0
+bid 1001 3 1 1 5 2 0 1
+bid 1002 3 2 2 6 3 1 2 0 1
+bid 1003 2 4 3 8 2 7 1 6 1 4 1 1
+expect welfare 16
+expect volume 3
+expect ranksum 5
+expect prices 7 8
+end
+
+case small_042
+items 4
+ask 100 3 2 3 1 4 5 3 0 1 2
+bid 1000 4 3 3 6 3 5 1 3 2 0 3
+bid 1001 2 4 3 8 3 6 4 6 4 4 2 2 3
+bid 1002 2 2 3 6 4 3 3 0 1 2
+bid 1003 2 2 2 8 2 1 3 0 1 2
+expect welfare 27
+expect volume 7
+expect ranksum 8
+expect prices 6 6 6 8
+end
+
+case small_043
+items 2
+ask 100 1 2 2 0 1 8 1 0
+ask 101 2 1 3 2 1 0
+bid 1000 3 2 4 8 4 5 2 0 1
+bid 1001 4 1 2 1 2 0 1
+bid 1002 4 4 1 8 4 7 2 7 2 1 2 0 1
+bid 1003 3 4 1 6 4 6 4 5 3 1 2 0 1
+bid 1004 4 4 2 7 3 2 3 1 1 1 2 0 1
+expect welfare 20
+expect volume 3
+expect ranksum 2
+expect prices 8 8
+end
+
+case small_044
+items 5
+ask 100 1 4 3 5 1 5 3 5 4 8 3 1 2 4
+ask 101 2 2 1 2 4 5 2 0 1
+bid 1000 2 2 2 8 2 4 4 0 1 2 3
+bid 1001 3 3 1 8 4 7 2 6 4 0 1 2 3
+expect welfare 18
+expect volume 6
+expect ranksum 8
+expect prices 7 7 7 7 none
+end
+
+case small_045
+items 2
+ask 100 4 4 4 1 4 6 4 6 1 7 1 0
+ask 101 1 2 2 3 2 4 2 0 1
+bid 1000 3 4 2 5 4 5 4 3 4 2 2 0 1
+bid 1001 3 2 2 6 1 1 2 0 1
+bid 1002 1 2 3 1 1 1 2 0 1
+bid 1003 2 4 3 8 2 5 3 3 1 2 1 1
+bid 1004 3 2 4 7 2 1 2 0 1
+expect welfare 31
+expect volume 6
+expect ranksum 19
+expect prices 5 8
+end
+
+case small_046
+items 2
+ask 100 2 1 1 0 2 0 1
+ask 101 4 3 2 0 1 1 4 6 2 0 1
+bid 1000 1 3 1 7 2 6 3 4 1 1
+bid 1001 3 2 3 8 2 5 2 0 1
+bid 1002 2 2 3 8 4 4 2 0 1
+expect welfare 36
+expect volume 7
+expect ranksum 15
+expect prices 6 6
+end
+
+case small_047
+items 6
+ask 100 2 3 1 2 4 6 3 7 2 1 3
+ask 101 4 4 1 2 1 3 2 4 2 5 3 0 1 5
+bid 1000 2 4 3 8 3 5 3 1 1 1 1 3
+bid 1001 4 2 3 7 1 1 2 1 5
+bid 1002 2 4 1 7 2 5 2 2 2 2 3 0 1 4
+bid 1003 2 4 3 8 3 8 1 6 4 5 1 5
+bid 1004 3 4 2 8 1 5 2 2 2 2 4 0 1 2 3
+expect welfare 33
+expect volume 10
+expect ranksum 25
+expect prices 6 6 6 6 6 6
+end
+
+case small_048
+items 4
+ask 100 2 2 2 3 1 7 1 2
+ask 101 2 1 4 1 3 0 1 2
+bid 1000 4 4 2 6 4 3 2 2 3 2 1 0
+bid 1001 4 4 4 3 3 2 1 1 3 1 2 0 3
+bid 1002 1 4 2 7 2 3 1 2 4 1 2 2 3
+bid 1003 1 1 2 7 2 2 3
+bid 1004 4 2 3 6 3 2 2 0 3
+expect welfare 22
+expect volume 4
+expect ranksum 9
+expect prices 6 none 1 7
+end
+
+case small_049
+items 4
+ask 100 3 1 1 2 3 0 2 3
+ask 101 1 1 3 6 2 0 1
+bid 1000 4 4 3 8 4 6 1 5 1 1 4 0 1 2 3
+bid 1001 2 2 2 8 2 1 3 0 1 2
+expect welfare 10
+expect volume 3
+expect ranksum 2
+expect prices 8 8 8 8
+end
+
+case small_050
+items 2
+ask 100 4 2 1 7 1 8 1 1
+ask 101 1 3 1 5 1 6 4 6 2 0 1
+bid 1000 4 4 2 8 1 5 4 5 4 4 1 0
+bid 1001 2 1 2 6 2 0 1
+expect welfare 3
+expect volume 2
+expect ranksum 3
+expect prices 8 6
+end
+
+case small_051
+items 5
+ask 100 1 2 1 2 3 6 2 0 3
+ask 101 2 1 1 8 3 0 2 4
+ask 102 4 4 3 2 2 2 2 4 3 8 1 4
+ask 103 4 3 1 0 1 3 3 6 2 2 4
+bid 1000 3 3 1 8 1 8 4 3 3 1 2 3
+bid 1001 3 4 2 7 4 7 1 4 3 3 4 0 1 3 4
+bid 1002 2 2 4 5 4 1 1 1
+bid 1003 3 3 3 8 1 4 4 4 2 0 3
+bid 1004 2 3 3 7 3 3 1 2 2 3 4
+expect welfare 42
+expect volume 10
+expect ranksum 38
+expect prices 8 7 6 8 6
+end
+
+case small_052
+items 3
+ask 100 4 2 3 0 1 2 3 0 1 2
+bid 1000 3 4 4 6 2 4 4 4 3 1 3 0 1 2
+expect welfare 22
+expect volume 4
+expect ranksum 0
+expect prices 4 4 4
+end
+
+case small_053
+items 5
+ask 100 4 3 3 1 2 4 2 8 2 2 4
+ask 101 4 2 3 3 4 7 2 1 3
+bid 1000 3 1 4 2 1 0
+bid 1001 4 1 2 4 4 0 1 3 4
+expect welfare 6
+expect volume 2
+expect ranksum 2
+expect prices 2 1 none 1 1
+end
+
+case small_054
+items 5
+ask 100 4 2 4 0 1 5 1 1
+ask 101 1 2 2 0 4 4 2 2 3
+ask 102 2 1 3 1 3 2 3 4
+bid 1000 1 4 2 8 4 6 3 6 1 2 3 1 2 3
+expect welfare 22
+expect volume 3
+expect ranksum 2
+expect prices none 0 0 0 none
+end
+
+case small_055
+items 3
+ask 100 2 3 1 4 2 4 2 6 1 2
+ask 101 4 3 2 4 3 5 4 7 2 1 2
+ask 102 4 4 3 1 3 4 3 5 4 6 1 2
+ask 103 2 2 2 2 1 3 1 2
+bid 1000 2 1 1 2 3 0 1 2
+expect welfare 1
+expect volume 1
+expect ranksum 2
+expect prices 1 1 1
+end
+
+case small_056
+items 6
+ask 100 1 3 3 0 4 1 3 2 2 1 3
+ask 101 2 3 1 4 1 7 3 8 3 0 1 2
+ask 102 3 2 4 1 3 7 2 2 3
+bid 1000 2 2 2 2 3 2 4 0 2 4 5
+bid 1001 1 4 3 6 3 6 2 4 3 1 2 1 2
+bid 1002 3 1 4 7 4 1 2 3 5
+expect welfare 36
+expect volume 6
+expect ranksum 18
+expect prices 2 2 2 2 2 2
+end
+
+case small_057
+items 6
+ask 100 3 4 4 2 2 5 4 7 1 8 1 1
+bid 1000 2 1 4 3 4 0 1 2 5
+bid 1001 2 2 1 3 2 3 3 1 3 5
+bid 1002 2 4 1 8 3 3 2 2 2 1 4 1 2 3 4
+expect welfare 8
+expect volume 3
+expect ranksum 2
+expect prices 3 3 3 3 3 3
+end
+
+case small_058
+items 4
+ask 100 1 1 1 0 1 0
+ask 101 2 4 1 2 1 3 4 4 4 7 3 1 2 3
+bid 1000 4 3 1 8 3 5 2 2 1 0
+bid 1001 4 3 1 8 1 2 2 1 1 2
+bid 1002 2 1 2 5 2 2 3
+bid 1003 3 4 1 3 2 3 1 3 2 2 2 0 3
+bid 1004 4 2 1 6 3 5 2 0 1
+expect welfare 20
+expect volume 6
+expect ranksum 18
+expect prices 5 5 4 4
+end
+
+case small_059
+items 6
+ask 100 1 3 4 1 1 1 1 5 1 4
+ask 101 2 2 3 2 2 3 2 2 5
+ask 102 3 4 2 0 1 1 1 2 4 5 1 0
+bid 1000 1 3 2 8 4 7 4 5 2 1 2
+bid 1001 1 2 1 7 1 4 1 3
+expect welfare 6
+expect volume 1
+expect ranksum 1
+expect prices none 8 2 7 none none
+end
+
+case small_060
+items 3
+ask 100 4 1 2 6 1 1
+bid 1000 1 2 1 8 2 7 2 1 2
+bid 1001 2 4 1 7 1 7 2 2 1 2 3 0 1 2
+bid 1002 3 3 1 8 2 1 4 1 2 0 1
+bid 1003 2 4 2 7 2 6 2 4 4 2 2 0 1
+expect welfare 4
+expect volume 2
+expect ranksum 2
+expect prices 7 7 7
+end
+
+case small_061
+items 6
+ask 100 2 3 3 6 4 6 4 8 3 1 3 4
+ask 101 2 2 4 2 1 7 1 5
+ask 102 2 1 1 1 1 2
+bid 1000 4 3 1 8 3 7 1 7 4 0 1 4 5
+bid 1001 1 1 3 8 4 0 2 4 5
+bid 1002 4 2 2 3 4 2 3 1 2 3
+expect welfare 24
+expect volume 7
+expect ranksum 7
+expect prices 7 7 3 3 7 7
+end
+
+case small_062
+items 3
+ask 100 3 3 2 0 3 3 3 5 2 0 1
+ask 101 2 4 4 1 1 4 1 5 1 8 3 0 1 2
+ask 102 2 2 4 0 3 3 2 0 1
+bid 1000 2 2 3 3 1 1 2 0 2
+bid 1001 1 3 1 1 2 1 1 1 2 0 1
+bid 1002 3 1 3 4 3 0 1 2
+bid 1003 1 2 2 3 1 3 3 0 1 2
+expect welfare 27
+expect volume 10
+expect ranksum 28
+expect prices 1 1 1
+end
+
+case small_063
+items 3
+ask 100 4 1 2 6 3 0 1 2
+bid 1000 3 4 1 6 4 5 3 5 4 5 2 1 2
+bid 1001 1 1 2 6 3 0 1 2
+bid 1002 3 3 3 8 3 4 1 1 3 0 1 2
+bid 1003 1 3 1 7 3 6 2 4 3 0 1 2
+bid 1004 3 3 4 8 4 4 4 3 2 0 2
+expect welfare 4
+expect volume 2
+expect ranksum 4
+expect prices 8 8 8
+end
+
+case small_064
+items 6
+ask 100 1 1 3 8 3 0 4 5
+bid 1000 3 4 1 7 1 4 3 2 1 2 2 1 3
+bid 1001 2 1 3 7 3 0 4 5
+bid 1002 2 2 2 3 2 1 3 0 3 5
+bid 1003 1 3 2 7 2 6 2 5 2 4 5
+bid 1004 2 4 4 8 1 4 4 3 1 3 4 0 2 3 5
+expect welfare 0
+expect volume 2
+expect ranksum 8
+expect prices 8 7 8 8 7 8
+end
+
+case small_065
+items 4
+ask 100 2 2 3 2 4 8 3 0 2 3
+ask 101 1 2 1 4 4 6 1 3
+ask 102 2 2 1 0 4 4 3 0 1 2
+ask 103 3 3 1 2 3 3 1 5 3 0 1 2
+bid 1000 1 1 4 7 2 0 3
+bid 1001 1 4 2 6 3 5 2 2 3 1 2 1 2
+bid 1002 2 3 3 8 1 8 4 4 3 0 1 3
+expect welfare 41
+expect volume 10
+expect ranksum 31
+expect prices 4 4 4 4
+end
+
+case small_066
+items 2
+ask 100 3 3 3 2 1 8 1 8 2 0 1
+ask 101 1 4 3 1 2 3 1 4 3 7 2 0 1
+ask 102 1 1 1 1 2 0 1
+bid 1000 1 3 1 6 4 2 1 1 1 0
+bid 1001 3 2 3 1 3 1 2 0 1
+bid 1002 3 3 3 6 2 3 1 1 1 1
+bid 1003 3 4 3 8 3 6 2 4 4 2 2 0 1
+expect welfare 33
+expect volume 6
+expect ranksum 17
+expect prices 6 6
+end
+
+case small_067
+items 2
+ask 100 3 4 1 2 1 6 4 7 4 7 1 0
+ask 101 4 4 2 0 3 2 4 4 1 4 2 0 1
+ask 102 2 1 4 3 1 1
+ask 103 4 1 1 2 2 0 1
+bid 1000 4 4 4 7 1 5 4 5 3 3 2 0 1
+bid 1001 4 1 3 5 2 0 1
+expect welfare 39
+expect volume 11
+expect ranksum 17
+expect prices 4 4
+end
+
+case small_068
+items 2
+ask 100 1 4 1 0 4 3 1 7 4 8 2 0 1
+ask 101 2 4 1 2 3 3 1 6 3 8 2 0 1
+bid 1000 1 3 1 8 3 4 1 4 2 0 1
+bid 1001 2 2 2 6 3 2 2 0 1
+expect welfare 16
+expect volume 4
+expect ranksum 4
+expect prices 3 3
+end
+
+case small_069
+items 6
+ask 100 1 3 3 3 3 6 2 7 1 3
+bid 1000 3 1 2 5 2 0 4
+bid 1001 2 3 3 2 4 1 2 1 2 1 2
+bid 1002 1 1 3 5 1 3
+expect welfare 2
+expect volume 1
+expect ranksum 2
+expect prices 5 2 2 3 5 none
+end
+
+case small_070
+items 3
+ask 100 1 4 4 0 3 4 2 6 3 7 1 2
+ask 101 1 1 1 8 1 2
+ask 102 4 1 2 7 3 0 1 2
+bid 1000 4 2 1 5 3 4 3 0 1 2
+bid 1001 3 4 3 5 3 3 3 2 4 2 3 0 1 2
+bid 1002 1 3 3 8 3 7 1 3 1 1
+bid 1003 2 4 1 8 4 7 4 6 2 3 3 0 1 2
+bid 1004 2 1 4 4 3 0 1 2
+expect welfare 9
+expect volume 3
+expect ranksum 12
+expect prices 7 7 7
+end
+
+case small_071
+items 3
+ask 100 1 4 4 1 3 2 1 3 3 7 1 1
+bid 1000 4 3 4 7 1 6 1 6 3 0 1 2
+bid 1001 4 2 1 3 1 2 1 2
+expect welfare 6
+expect volume 1
+expect ranksum 0
+expect prices 7 7 7
+end
+
+case small_072
+items 5
+ask 100 2 4 4 1 2 4 2 7 1 8 1 3
+ask 101 1 1 4 7 2 3 4
+ask 102 2 1 4 3 2 0 3
+ask 103 1 1 4 0 3 1 3 4
+bid 1000 4 2 2 8 2 2 1 1
+bid 1001 1 3 4 2 3 2 2 1 4 0 1 3 4
+bid 1002 4 2 4 8 4 3 3 0 1 2
+bid 1003 3 2 3 8 4 6 2 1 2
+expect welfare 22
+expect volume 5
+expect ranksum 19
+expect prices 8 8 8 0 0
+end
+
+case small_073
+items 5
+ask 100 1 4 1 0 1 5 4 6 3 7 2 0 1
+ask 101 1 2 2 1 1 4 2 0 2
+ask 102 4 4 2 0 4 1 3 4 4 8 1 2
+ask 103 1 3 3 0 3 8 1 8 1 0
+bid 1000 1 3 1 7 2 3 1 3 2 2 4
+bid 1001 1 2 2 4 1 2 3 1 2 3
+bid 1002 4 2 4 7 2 6 3 0 1 4
+bid 1003 2 1 4 4 1 2
+expect welfare 39
+expect volume 8
+expect ranksum 26
+expect prices 6 6 1 4 6
+end
+
+case small_074
+items 5
+ask 100 4 3 4 3 1 4 3 6 2 2 4
+ask 101 4 3 4 4 4 8 4 8 1 3
+ask 102 3 3 2 2 2 5 4 8 2 1 2
+ask 103 3 2 1 1 1 7 2 0 2
+bid 1000 3 4 2 5 4 5 3 4 4 3 4 0 1 2 3
+bid 1001 1 2 2 7 1 3 2 1 2
+expect welfare 23
+expect volume 10
+expect ranksum 12
+expect prices 4 4 3 4 none
+end
+
+case small_075
+items 6
+ask 100 1 4 4 0 2 7 3 8 4 8 3 0 1 2
+bid 1000 3 4 2 8 1 8 3 6 4 1 4 0 1 2 5
+bid 1001 4 3 3 8 4 2 3 1 4 1 3 4 5
+expect welfare 24
+expect volume 3
+expect ranksum 0
+expect prices 8 8 8 8 8 8
+end
+
+case small_076
+items 5
+ask 100 2 1 4 0 2 0 2
+ask 101 2 3 1 1 4 2 3 4 2 1 4
+bid 1000 2 1 4 3 4 0 2 3 4
+bid 1001 2 4 4 4 2 2 3 1 4 1 1 1
+bid 1002 4 2 2 5 1 2 2 2 4
+bid 1003 3 3 4 8 3 3 1 3 1 1
+expect welfare 31
+expect volume 8
+expect ranksum 14
+expect prices 0 8 2 2 2
+end
+
+case small_077
+items 2
+ask 100 1 3 3 0 1 1 1 3 1 1
+ask 101 1 1 2 0 2 0 1
+bid 1000 3 2 3 6 2 5 2 0 1
+bid 1001 4 4 4 6 2 4 4 3 4 2 1 1
+expect welfare 18
+expect volume 3
+expect ranksum 2
+expect prices 6 6
+end
+
+case small_078
+items 3
+ask 100 2 1 4 3 1 0
+bid 1000 2 1 2 8 1 0
+bid 1001 2 2 2 5 2 2 3 0 1 2
+expect welfare 10
+expect volume 2
+expect ranksum 0
+expect prices 5 5 5
+end
+
+case small_079
+items 4
+ask 100 3 1 2 7 1 0
+ask 101 2 3 2 1 4 1 4 4 2 2 3
+ask 102 4 3 2 0 3 1 3 3 1 0
+bid 1000 3 1 2 1 1 2
+expect welfare 0
+expect volume 2
+expect ranksum 2
+expect prices none none 1 none
+end
+
+case small_080
+items 5
+ask 100 3 1 4 1 3 0 2 4
+ask 101 2 4 4 1 1 1 3 1 3 4 1 1
+bid 1000 4 2 2 8 3 1 1 0
+bid 1001 4 2 2 8 3 1 4 0 1 2 3
+bid 1002 4 3 4 8 3 6 1 1 2 1 4
+expect welfare 42
+expect volume 6
+expect ranksum 8
+expect prices 8 8 8 8 8
+end
+
+case small_081
+items 2
+ask 100 3 3 3 1 4 2 1 7 2 0 1
+ask 101 4 3 3 0 3 0 3 6 1 1
+bid 1000 4 3 3 4 2 3 2 3 2 0 1
+bid 1001 4 2 2 6 3 3 2 0 1
+bid 1002 2 3 2 5 3 2 1 1 2 0 1
+expect welfare 34
+expect volume 10
+expect ranksum 10
+expect prices 3 3
+end
+
+case small_082
+items 2
+ask 100 4 1 1 2 2 0 1
+ask 101 4 1 1 2 2 0 1
+ask 102 1 4 1 2 2 2 2 3 4 4 2 0 1
+bid 1000 2 3 3 7 4 5 4 4 2 0 1
+expect welfare 18
+expect volume 4
+expect ranksum 5
+expect prices 2 2
+end
+
+case small_083
+items 5
+ask 100 3 2 3 1 3 2 2 0 3
+bid 1000 2 4 3 7 1 3 4 1 4 1 4 0 1 2 4
+expect welfare 12
+expect volume 2
+expect ranksum 0
+expect prices 1 7 7 none 7
+end
+
+case small_084
+items 3
+ask 100 1 1 4 0 3 0 1 2
+ask 101 3 4 4 0 3 1 2 2 1 7 2 0 1
+ask 102 4 1 2 8 1 0
+bid 1000 1 3 2 8 3 8 3 7 3 0 1 2
+bid 1001 1 1 4 8 2 1 2
+expect welfare 32
+expect volume 4
+expect ranksum 2
+expect prices 0 0 8
+end
+
+case small_085
+items 3
+ask 100 1 4 3 2 4 4 2 5 1 6 2 0 1
+ask 101 4 1 1 5 3 0 1 2
+ask 102 4 2 4 7 3 8 2 0 1
+bid 1000 3 2 2 7 3 6 3 0 1 2
+bid 1001 3 2 1 5 4 2 2 0 1
+bid 1002 4 4 4 5 1 4 4 3 2 1 2 0 2
+expect welfare 11
+expect volume 3
+expect ranksum 1
+expect prices 6 6 6
+end
+
+case small_086
+items 4
+ask 100 3 2 2 0 4 2 1 2
+bid 1000 3 4 1 8 4 8 3 4 4 2 3 0 2 3
+expect welfare 22
+expect volume 3
+expect ranksum 0
+expect prices 8 none 2 8
+end
+
+case small_087
+items 3
+ask 100 3 3 2 1 2 2 4 5 2 0 1
+ask 101 3 4 2 3 2 4 3 8 1 8 3 0 1 2
+bid 1000 1 3 2 8 3 7 4 2 2 0 1
+bid 1001 4 4 4 7 2 7 4 6 1 6 2 0 1
+expect welfare 40
+expect volume 10
+expect ranksum 12
+expect prices 5 5 none
+end
+
+case small_088
+items 3
+ask 100 4 1 2 2 2 0 1
+bid 1000 3 1 2 1 1 0
+bid 1001 1 4 3 6 2 5 3 4 3 3 2 1 2
+bid 1002 3 2 1 7 1 4 3 0 1 2
+bid 1003 3 3 4 4 3 4 2 1 1 2
+expect welfare 9
+expect volume 2
+expect ranksum 3
+expect prices 4 4 6
+end
+
+case small_089
+items 2
+ask 100 2 4 4 4 4 4 2 6 3 8 2 0 1
+ask 101 1 1 4 5 2 0 1
+ask 102 2 3 3 4 3 6 3 8 1 1
+bid 1000 2 4 1 8 1 7 3 5 4 5 2 0 1
+expect welfare 9
+expect volume 4
+expect ranksum 0
+expect prices 4 4
+end
+
+case small_090
+items 2
+ask 100 1 3 3 2 4 3 1 7 1 0
+ask 101 3 1 4 6 1 1
+ask 102 4 2 1 4 1 5 2 0 1
+bid 1000 4 1 3 5 2 0 1
+bid 1001 3 4 2 8 4 3 3 3 3 2 2 0 1
+bid 1002 3 4 4 8 1 7 1 6 3 2 1 1
+bid 1003 1 3 2 7 1 7 1 1 1 0
+bid 1004 3 3 4 4 3 2 2 1 2 0 1
+expect welfare 18
+expect volume 6
+expect ranksum 18
+expect prices 6 6
+end
+
+case small_091
+items 3
+ask 100 1 2 4 1 3 8 2 1 2
+bid 1000 3 1 3 5 3 0 1 2
+bid 1001 3 1 1 8 3 0 1 2
+expect welfare 11
+expect volume 2
+expect ranksum 1
+expect prices 5 5 5
+end
+
+case small_092
+items 5
+ask 100 3 4 3 1 3 2 2 4 3 6 1 4
+ask 101 2 3 4 4 3 5 2 5 1 3
+ask 102 1 4 1 0 3 0 2 6 3 6 2 2 3
+ask 103 4 3 3 2 2 3 3 7 1 2
+bid 1000 3 2 4 8 2 3 1 1
+expect welfare 0
+expect volume 0
+expect ranksum 0
+expect prices none 8 none none none
+end
+
+case small_093
+items 3
+ask 100 3 1 3 4 1 0
+ask 101 1 2 3 7 2 7 1 1
+bid 1000 4 2 4 7 3 4 2 0 2
+expect welfare 9
+expect volume 3
+expect ranksum 0
+expect prices 7 none 7
+end
+
+case small_094
+items 4
+ask 100 3 4 4 0 2 1 4 1 3 2 3 1 2 3
+ask 101 1 1 3 7 3 0 2 3
+ask 102 4 4 1 1 1 2 3 7 1 7 3 0 1 2
+bid 1000 4 1 3 7 1 1
+bid 1001 1 4 3 4 4 3 4 2 2 1 1 0
+bid 1002 3 3 3 7 3 4 3 2 2 1 3
+bid 1003 3 3 2 7 1 5 1 1 2 0 2
+expect welfare 61
+expect volume 11
+expect ranksum 22
+expect prices 4 4 1 1
+end
+
+case small_095
+items 4
+ask 100 4 2 1 6 1 8 2 0 2
+bid 1000 2 4 3 7 2 6 3 6 1 3 2 0 3
+bid 1001 3 1 4 6 1 3
+bid 1002 4 2 1 7 1 2 3 0 1 3
+bid 1003 2 3 1 7 3 4 1 3 3 0 1 2
+expect welfare 1
+expect volume 1
+expect ranksum 0
+expect prices 7 7 7 7
+end
+
+case small_096
+items 6
+ask 100 4 2 2 4 3 8 1 1
+ask 101 4 4 4 3 1 4 4 5 1 6 2 2 3
+ask 102 2 2 4 0 3 5 2 0 1
+ask 103 1 2 3 0 2 6 1 5
+bid 1000 4 2 4 8 4 1 4 0 1 3 5
+bid 1001 1 4 4 5 2 4 1 3 2 2 1 5
+bid 1002 2 2 4 7 2 2 3 0 1 4
+expect welfare 53
+expect volume 9
+expect ranksum 24
+expect prices 3 3 none 3 3 3
+end
+
+case small_097
+items 3
+ask 100 3 1 2 0 2 0 2
+ask 101 3 1 3 2 1 2
+ask 102 2 1 3 2 1 0
+ask 103 4 3 3 2 3 2 1 3 1 1
+bid 1000 1 3 2 8 1 2 1 1 2 1 2
+bid 1001 1 2 2 6 4 2 3 0 1 2
+expect welfare 24
+expect volume 5
+expect ranksum 10
+expect prices 2 2 2
+end
+
+case small_098
+items 6
+ask 100 4 2 4 5 1 7 3 1 4 5
+ask 101 4 3 4 2 3 2 3 4 3 0 1 4
+bid 1000 2 4 4 6 2 5 3 5 4 3 2 2 3
+bid 1001 1 3 3 6 3 6 2 5 1 4
+bid 1002 1 4 3 7 1 7 4 7 2 3 1 1
+expect welfare 9
+expect volume 2
+expect ranksum 5
+expect prices none 2 6 6 2 none
+end
+
+case small_099
+items 5
+ask 100 3 2 3 6 2 8 3 1 2 3
+ask 101 2 3 3 0 2 7 4 7 2 2 4
+ask 102 3 4 3 2 1 5 1 6 3 7 1 4
+bid 1000 2 3 3 5 1 4 3 2 2 2 4
+bid 1001 1 2 1 6 4 2 3 1 2 4
+expect welfare 21
+expect volume 5
+expect ranksum 8
+expect prices none 2 2 none 2
+end
+
+case small_100
+items 6
+ask 100 2 4 4 5 4 5 4 6 4 8 2 0 2
+ask 101 1 3 2 0 2 1 3 4 2 0 1
+ask 102 1 4 3 1 2 3 1 6 2 6 3 1 4 5
+bid 1000 4 1 3 7 2 3 4
+bid 1001 3 3 1 1 1 1 4 1 4 2 3 4 5
+bid 1002 4 3 4 7 4 3 3 1 1 0
+expect welfare 17
+expect volume 5
+expect ranksum 12
+expect prices 7 none 1 7 7 1
+end
+
+case small_101
+items 3
+ask 100 3 4 1 1 2 1 2 1 2 5 1 2
+bid 1000 2 4 1 6 3 5 2 5 2 3 3 0 1 2
+bid 1001 1 2 4 7 2 2 3 0 1 2
+bid 1002 4 1 1 4 1 0
+expect welfare 15
+expect volume 3
+expect ranksum 1
+expect prices 7 7 1
+end
+
+case small_102
+items 4
+ask 100 1 4 1 3 1 4 4 6 1 6 3 0 1 2
+ask 101 3 2 4 2 2 8 2 0 1
+ask 102 4 3 1 7 1 7 1 8 1 3
+bid 1000 1 4 2 7 1 6 1 4 4 1 1 2
+bid 1001 3 2 1 4 2 2 1 2
+expect welfare 4
+expect volume 1
+expect ranksum 0
+expect prices none none 4 none
+end
+
+case small_103
+items 6
+ask 100 2 1 1 7 1 5
+bid 1000 4 2 1 7 4 6 3 2 3 5
+expect welfare 0
+expect volume 1
+expect ranksum 0
+expect prices none none 7 7 none 7
+end
+
+case small_104
+items 4
+ask 100 3 2 2 3 2 6 1 1
+bid 1000 4 1 2 5 1 2
+bid 1001 3 2 3 6 3 1 1 3
+bid 1002 3 2 3 4 3 2 3 0 1 3
+bid 1003 1 3 3 8 1 6 2 4 3 0 1 2
+bid 1004 3 3 4 6 1 3 4 3 3 1 2 3
+expect welfare 8
+expect volume 3
+expect ranksum 11
+expect prices 8 6 8 6
+end
+
+case small_105
+items 4
+ask 100 1 4 1 2 2 3 2 6 3 6 2 2 3
+ask 101 1 1 3 7 1 0
+ask 102 1 3 3 2 1 6 4 7 3 0 2 3
+ask 103 4 2 1 1 4 3 1 0
+bid 1000 1 3 3 7 2 4 4 3 2 0 3
+bid 1001 3 1 1 7 2 1 2
+expect welfare 16
+expect volume 3
+expect ranksum 6
+expect prices 1 2 2 2
+end
+
+case small_106
+items 2
+ask 100 4 1 4 7 2 0 1
+ask 101 3 3 2 0 4 2 3 5 2 0 1
+ask 102 1 3 1 0 1 2 3 5 2 0 1
+ask 103 4 1 3 2 1 1
+bid 1000 4 1 2 8 2 0 1
+bid 1001 3 2 3 8 2 3 1 1
+expect welfare 36
+expect volume 5
+expect ranksum 9
+expect prices 2 2
+end
+
+case small_107
+items 5
+ask 100 4 2 2 2 4 5 3 0 2 4
+ask 101 3 1 3 8 2 0 2
+ask 102 4 4 1 1 3 1 2 8 4 8 3 0 1 2
+ask 103 2 2 1 6 3 7 1 0
+bid 1000 4 3 2 7 3 5 4 5 3 0 1 3
+expect welfare 26
+expect volume 8
+expect ranksum 8
+expect prices 5 5 none 5 none
+end
+
+case small_108
+items 5
+ask 100 2 4 3 3 2 5 4 8 2 8 1 2
+bid 1000 4 4 4 8 2 5 1 4 2 2 2 3 4
+bid 1001 1 1 1 3 3 0 2 3
+bid 1002 3 2 2 7 3 1 4 1 2 3 4
+expect welfare 8
+expect volume 2
+expect ranksum 4
+expect prices 3 3 3 8 8
+end
+
+case small_109
+items 2
+ask 100 2 3 2 1 2 3 4 6 2 0 1
+ask 101 2 1 1 2 2 0 1
+bid 1000 2 4 3 5 3 2 3 2 3 2 1 1
+bid 1001 4 1 4 8 2 0 1
+bid 1002 3 1 3 3 2 0 1
+bid 1003 4 1 1 8 2 0 1
+bid 1004 2 1 4 5 2 0 1
+expect welfare 30
+expect volume 5
+expect ranksum 8
+expect prices 5 5
+end
+
+case small_110
+items 5
+ask 100 3 1 4 7 2 0 2
+ask 101 3 1 2 0 3 0 2 3
+ask 102 1 3 4 2 1 6 3 8 2 1 4
+ask 103 4 2 4 2 4 7 2 2 3
+bid 1000 2 3 4 7 3 5 2 3 1 2
+bid 1001 4 2 3 5 4 2 3 0 2 4
+bid 1002 2 1 1 5 1 2
+expect welfare 26
+expect volume 7
+expect ranksum 22
+expect prices 2 none 2 none 2
+end
+
+case small_111
+items 6
+ask 100 1 2 2 2 2 5 3 0 1 2
+bid 1000 4 3 3 8 3 8 4 2 1 2
+bid 1001 1 3 2 8 4 6 3 3 1 1
+bid 1002 4 3 4 6 4 4 3 4 2 4 5
+bid 1003 4 2 1 7 3 6 1 4
+expect welfare 12
+expect volume 2
+expect ranksum 1
+expect prices none 2 8 none 7 6
+end
+
+case small_112
+items 4
+ask 100 4 3 3 6 3 7 3 8 1 3
+bid 1000 3 2 3 5 2 4 2 0 2
+bid 1001 4 4 2 6 4 5 3 4 4 1 1 3
+bid 1002 3 2 3 7 1 5 4 0 1 2 3
+bid 1003 3 3 2 6 2 5 4 2 1 2
+bid 1004 3 2 1 4 2 1 2 0 1
+expect welfare 3
+expect volume 3
+expect ranksum 6
+expect prices 6 6 6 6
+end
+
+case small_113
+items 4
+ask 100 1 4 3 1 3 2 1 4 4 8 1 3
+ask 101 2 2 2 1 1 5 2 1 2
+ask 102 2 4 4 3 3 5 1 7 2 7 1 1
+bid 1000 1 2 4 4 3 1 3 0 2 3
+bid 1001 4 2 3 8 2 3 4 0 1 2 3
+bid 1002 4 3 1 7 4 3 1 1 2 0 3
+bid 1003 1 2 2 7 3 1 4 0 1 2 3
+bid 1004 3 3 2 7 3 4 4 3 2 1 3
+expect welfare 31
+expect volume 6
+expect ranksum 18
+expect prices 7 7 7 7
+end
+
+case small_114
+items 5
+ask 100 4 1 1 8 2 2 4
+ask 101 4 3 3 0 2 0 2 4 1 0
+ask 102 4 1 1 0 1 3
+bid 1000 1 1 4 4 1 2
+bid 1001 2 1 4 8 1 4
+expect welfare 0
+expect volume 1
+expect ranksum 1
+expect prices none none 4 none 8
+end
+
+case small_115
+items 3
+ask 100 1 2 4 5 1 8 1 0
+ask 101 2 1 2 0 1 2
+ask 102 4 2 1 0 3 5 1 2
+bid 1000 1 4 4 7 1 6 2 5 2 1 3 0 1 2
+bid 1001 1 2 3 8 4 8 3 0 1 2
+expect welfare 18
+expect volume 3
+expect ranksum 4
+expect prices 7 8 0
+end
+
+case small_116
+items 2
+ask 100 2 1 4 3 2 0 1
+ask 101 4 3 2 1 1 2 2 8 1 1
+ask 102 3 3 3 4 1 5 1 6 2 0 1
+ask 103 1 2 1 7 1 7 2 0 1
+bid 1000 3 3 1 8 1 2 2 2 2 0 1
+bid 1001 1 1 3 7 2 0 1
+bid 1002 3 3 1 6 4 5 4 4 2 0 1
+bid 1003 3 4 1 7 1 6 1 4 1 1 1 1
+bid 1004 2 4 1 8 2 6 2 3 4 1 2 0 1
+expect welfare 38
+expect volume 11
+expect ranksum 37
+expect prices 5 5
+end
+
+case small_117
+items 2
+ask 100 3 2 3 0 2 6 1 1
+ask 101 2 1 3 2 1 0
+bid 1000 4 3 4 6 1 3 4 2 1 1
+bid 1001 4 1 3 2 2 0 1
+bid 1002 3 1 2 2 2 0 1
+bid 1003 3 1 4 3 1 1
+expect welfare 18
+expect volume 5
+expect ranksum 4
+expect prices 2 6
+end
+
+case small_118
+items 2
+ask 100 3 4 3 1 1 2 2 7 4 8 2 0 1
+ask 101 4 3 3 5 2 7 1 8 2 0 1
+bid 1000 1 1 4 3 2 0 1
+bid 1001 3 2 1 7 4 1 1 1
+bid 1002 1 1 3 7 2 0 1
+bid 1003 3 4 2 8 4 6 1 5 4 3 2 0 1
+bid 1004 3 1 2 4 2 0 1
+expect welfare 29
+expect volume 7
+expect ranksum 20
+expect prices 6 6
+end
+
+case small_119
+items 3
+ask 100 2 1 4 5 2 1 2
+ask 101 3 2 1 2 2 2 2 0 2
+bid 1000 2 3 4 6 3 4 1 2 1 2
+bid 1001 3 4 4 7 2 5 4 3 3 2 3 0 1 2
+bid 1002 1 4 3 4 3 3 3 3 3 3 2 1 2
+bid 1003 3 4 3 7 1 6 1 1 2 1 3 0 1 2
+expect welfare 23
+expect volume 7
+expect ranksum 16
+expect prices 6 6 6
+end
+
+case small_120
+items 2
+ask 100 2 1 4 5 2 0 1
+ask 101 1 3 3 0 3 0 4 6 2 0 1
+ask 102 1 3 3 3 3 6 1 7 2 0 1
+bid 1000 3 3 1 7 3 3 3 2 2 0 1
+bid 1001 1 2 2 5 3 4 2 0 1
+bid 1002 4 1 1 4 2 0 1
+bid 1003 4 1 2 1 2 0 1
+expect welfare 15
+expect volume 4
+expect ranksum 10
+expect prices 3 3
+end
+
+case small_121
+items 2
+ask 100 2 3 3 0 2 1 1 2 2 0 1
+ask 101 2 2 3 0 1 2 2 0 1
+ask 102 1 4 1 0 3 4 4 7 3 8 2 0 1
+bid 1000 4 3 2 8 2 3 2 2 1 1
+expect welfare 22
+expect volume 4
+expect ranksum 2
+expect prices none 0
+end
+
+case small_122
+items 3
+ask 100 4 4 1 2 1 6 2 8 1 8 3 0 1 2
+ask 101 4 3 4 1 2 4 4 7 1 2
+bid 1000 3 3 3 6 3 4 3 1 2 0 2
+bid 1001 4 3 1 7 1 5 2 1 1 1
+bid 1002 4 3 2 8 2 3 3 2 3 0 1 2
+bid 1003 3 3 2 2 1 1 3 1 3 0 1 2
+bid 1004 1 2 1 7 3 3 1 0
+expect welfare 30
+expect volume 6
+expect ranksum 13
+expect prices 6 6 6
+end
+
+case small_123
+items 5
+ask 100 4 3 2 1 1 2 2 3 3 2 3 4
+ask 101 4 2 1 2 3 8 3 1 2 4
+ask 102 3 4 2 1 2 5 3 6 2 7 3 2 3 4
+ask 103 3 4 2 0 3 1 2 1 2 5 3 1 3 4
+bid 1000 4 2 4 8 2 3 1 2
+bid 1001 3 2 1 5 4 4 1 1
+bid 1002 3 4 1 6 1 5 2 4 4 1 1 3
+bid 1003 3 1 1 8 3 1 3 4
+expect welfare 59
+expect volume 11
+expect ranksum 37
+expect prices none 1 1 1 1
+end
+
+case small_124
+items 6
+ask 100 1 2 2 6 1 7 3 1 3 4
+ask 101 4 3 4 0 4 5 3 6 2 2 3
+bid 1000 1 4 1 7 3 4 4 2 4 1 3 0 1 4
+bid 1001 4 2 3 5 2 3 2 4 5
+bid 1002 3 2 2 5 1 5 2 0 4
+bid 1003 2 4 2 6 4 6 4 6 2 5 3 0 2 3
+expect welfare 25
+expect volume 5
+expect ranksum 16
+expect prices 6 6 0 0 6 5
+end
+
+case small_125
+items 2
+ask 100 3 1 4 5 1 0
+ask 101 3 4 3 1 1 2 1 4 3 7 2 0 1
+ask 102 3 1 4 8 2 0 1
+bid 1000 4 4 1 8 2 4 1 4 4 2 2 0 1
+bid 1001 1 1 4 7 2 0 1
+expect welfare 21
+expect volume 5
+expect ranksum 7
+expect prices 4 4
+end
+
+case small_126
+items 4
+ask 100 2 4 4 0 3 3 1 4 4 7 3 0 2 3
+ask 101 3 4 1 0 2 0 3 2 4 3 2 0 3
+bid 1000 2 4 4 6 4 5 1 5 2 1 2 2 3
+bid 1001 1 2 1 5 1 1 2 0 1
+bid 1002 1 3 1 7 3 5 2 3 4 0 1 2 3
+expect welfare 41
+expect volume 7
+expect ranksum 8
+expect prices 0 5 5 0
+end
+
+case small_127
+items 2
+ask 100 2 1 2 0 1 1
+bid 1000 3 3 2 6 4 5 2 3 2 0 1
+expect welfare 12
+expect volume 2
+expect ranksum 0
+expect prices 5 5
+end
+
+case small_128
+items 6
+ask 100 2 1 4 8 1 0
+ask 101 3 3 2 2 4 5 1 6 1 2
+ask 102 3 4 2 4 2 6 2 6 2 8 2 2 3
+bid 1000 1 4 3 8 1 7 1 5 1 2 4 0 2 3 5
+bid 1001 1 1 2 5 3 0 2 5
+bid 1002 1 4 3 8 3 8 4 5 3 2 3 0 1 4
+bid 1003 2 1 3 1 3 2 3 5
+expect welfare 13
+expect volume 5
+expect ranksum 7
+expect prices 8 8 2 4 8 8
+end
+
+case small_129
+items 6
+ask 100 4 2 3 4 4 5 2 1 4
+ask 101 2 1 1 1 1 4
+ask 102 3 4 1 0 1 1 3 3 3 4 2 1 4
+bid 1000 1 2 3 7 1 6 1 3
+bid 1001 4 3 3 6 3 5 1 2 3 0 1 4
+expect welfare 22
+expect volume 6
+expect ranksum 17
+expect prices 3 3 none 7 3 none
+end
+
+case small_130
+items 3
+ask 100 4 3 3 1 2 2 3 2 2 0 2
+ask 101 3 2 4 0 3 7 3 0 1 2
+ask 102 4 1 4 6 3 0 1 2
+bid 1000 2 2 4 5 1 1 3 0 1 2
+bid 1001 1 3 1 8 2 4 3 3 1 2
+bid 1002 1 1 1 2 1 0
+expect welfare 28
+expect volume 7
+expect ranksum 7
+expect prices 1 1 1
+end
+
+case small_131
+items 5
+ask 100 3 4 2 0 2 1 2 7 2 8 1 0
+ask 101 2 3 2 0 4 8 1 8 1 2
+bid 1000 2 2 4 8 1 1 1 2
+bid 1001 2 2 1 6 4 5 3 2 3 4
+bid 1002 2 4 2 7 4 6 3 5 1 2 4 0 2 3 4
+bid 1003 2 3 4 7 4 6 3 2 1 3
+expect welfare 30
+expect volume 4
+expect ranksum 6
+expect prices 0 none 6 7 6
+end
+
+case small_132
+items 3
+ask 100 3 3 4 3 3 7 2 8 2 0 1
+ask 101 2 1 1 0 1 2
+bid 1000 1 2 3 8 4 5 1 2
+bid 1001 3 3 2 7 1 6 2 4 2 0 2
+bid 1002 4 3 2 8 4 6 2 2 1 2
+expect welfare 19
+expect volume 4
+expect ranksum 4
+expect prices 3 none 8
+end
+
+case small_133
+items 5
+ask 100 3 4 1 0 1 3 2 4 3 8 1 2
+bid 1000 2 1 2 8 4 0 1 3 4
+bid 1001 1 2 3 8 3 7 1 3
+expect welfare 0
+expect volume 0
+expect ranksum 0
+expect prices 8 8 none 8 8
+end
+
+case small_134
+items 4
+ask 100 4 1 3 3 1 0
+bid 1000 4 1 4 2 4 0 1 2 3
+bid 1001 4 1 1 8 1 0
+bid 1002 2 4 4 7 3 7 1 4 3 1 3 0 1 3
+bid 1003 1 4 2 7 4 7 4 3 3 2 1 2
+expect welfare 13
+expect volume 3
+expect ranksum 5
+expect prices 3 7 7 7
+end
+
+case small_135
+items 5
+ask 100 3 1 4 2 2 0 2
+ask 101 4 3 1 2 3 3 4 7 1 0
+ask 102 1 3 1 0 2 2 4 4 1 0
+bid 1000 3 2 3 5 2 3 4 0 1 2 3
+bid 1001 4 2 4 6 4 5 1 3
+expect welfare 13
+expect volume 5
+expect ranksum 2
+expect prices 2 2 2 6 none
+end
+
+case small_136
+items 5
+ask 100 4 2 2 5 2 6 2 1 4
+ask 101 3 4 2 2 1 5 3 7 1 8 2 3 4
+ask 102 2 4 3 0 4 1 3 2 2 7 1 0
+ask 103 3 1 1 4 1 0
+bid 1000 2 2 2 7 1 7 4 0 1 2 3
+bid 1001 1 3 1 7 2 4 1 1 1 0
+bid 1002 2 1 3 3 1 3
+bid 1003 1 2 3 4 3 3 1 2
+bid 1004 1 2 3 5 3 5 1 1
+expect welfare 24
+expect volume 5
+expect ranksum 11
+expect prices 3 5 4 3 none
+end
+
+case small_137
+items 3
+ask 100 1 1 2 6 2 1 2
+ask 101 1 1 1 1 3 0 1 2
+bid 1000 2 3 1 6 4 2 2 2 3 0 1 2
+bid 1001 1 4 2 7 4 2 1 2 4 2 3 0 1 2
+expect welfare 7
+expect volume 3
+expect ranksum 3
+expect prices 6 6 6
+end
+
+case small_138
+items 2
+ask 100 1 1 3 8 1 1
+ask 101 3 4 3 0 1 2 3 5 2 7 2 0 1
+ask 102 2 3 2 2 2 2 3 7 2 0 1
+ask 103 4 4 2 1 1 5 1 5 2 7 2 0 1
+bid 1000 1 2 3 4 3 3 2 0 1
+expect welfare 8
+expect volume 2
+expect ranksum 2
+expect prices 0 0
+end
+
+case small_139
+items 6
+ask 100 3 1 4 1 2 3 5
+ask 101 1 2 3 1 4 3 2 2 4
+ask 102 4 1 2 0 2 0 5
+bid 1000 4 4 4 6 3 5 3 3 4 1 4 2 3 4 5
+expect welfare 36
+expect volume 8
+expect ranksum 6
+expect prices none none 3 3 3 3
+end
+
+case small_140
+items 2
+ask 100 1 2 1 2 3 8 2 0 1
+ask 101 1 2 4 3 3 8 2 0 1
+ask 102 2 4 2 0 1 2 3 4 1 5 2 0 1
+bid 1000 4 2 3 7 2 2 2 0 1
+expect welfare 19
+expect volume 4
+expect ranksum 6
+expect prices 2 2
+end
+
+case small_141
+items 4
+ask 100 1 3 3 3 3 3 3 8 1 0
+ask 101 4 2 4 2 4 3 2 0 3
+bid 1000 4 3 3 8 2 8 3 4 3 1 2 3
+expect welfare 24
+expect volume 4
+expect ranksum 4
+expect prices none 8 8 2
+end
+
+case small_142
+items 4
+ask 100 4 2 3 1 1 5 1 1
+bid 1000 3 2 4 6 3 2 2 0 1
+bid 1001 2 2 4 8 4 2 4 0 1 2 3
+bid 1002 4 4 3 7 1 5 1 3 1 3 1 3
+expect welfare 20
+expect volume 4
+expect ranksum 2
+expect prices 8 6 8 8
+end
+
+case small_143
+items 3
+ask 100 1 3 3 0 2 1 2 5 3 0 1 2
+ask 101 2 1 3 4 2 1 2
+ask 102 1 3 2 5 1 6 2 7 3 0 1 2
+ask 103 1 3 1 4 3 6 1 8 2 0 2
+bid 1000 1 1 4 7 1 1
+bid 1001 1 3 4 8 3 8 4 4 2 0 1
+bid 1002 4 1 3 1 3 0 1 2
+expect welfare 20
+expect volume 4
+expect ranksum 5
+expect prices 1 4 1
+end
+
+case small_144
+items 3
+ask 100 1 1 4 7 1 1
+ask 101 3 1 1 5 3 0 1 2
+ask 102 4 1 2 0 1 2
+bid 1000 2 3 4 5 4 5 1 3 3 0 1 2
+bid 1001 2 3 3 7 2 2 2 2 2 0 1
+expect welfare 12
+expect volume 4
+expect ranksum 7
+expect prices 7 7 0
+end
+
+case small_145
+items 3
+ask 100 3 3 2 3 1 8 4 8 1 0
+ask 101 1 2 3 3 4 4 1 0
+ask 102 1 4 3 0 2 4 1 5 2 7 3 0 1 2
+bid 1000 3 3 1 4 1 2 3 1 1 0
+bid 1001 4 2 3 8 4 7 2 0 1
+bid 1002 4 2 2 3 1 3 3 0 1 2
+bid 1003 4 3 3 6 1 4 1 1 1 1
+bid 1004 3 2 2 7 1 3 1 0
+expect welfare 32
+expect volume 6
+expect ranksum 14
+expect prices 7 7 3
+end
+
+case small_146
+items 5
+ask 100 1 2 2 0 1 7 1 2
+ask 101 1 4 3 6 1 6 4 7 4 8 2 0 4
+ask 102 4 2 4 2 2 2 1 3
+bid 1000 1 2 3 7 2 3 2 1 4
+expect welfare 1
+expect volume 1
+expect ranksum 1
+expect prices none 7 none none 6
+end
+
+case small_147
+items 2
+ask 100 3 2 1 2 2 4 2 0 1
+ask 101 2 4 3 0 2 0 1 1 1 6 1 1
+bid 1000 3 1 1 4 2 0 1
+expect welfare 4
+expect volume 1
+expect ranksum 1
+expect prices 0 0
+end
+
+case small_148
+items 3
+ask 100 3 2 1 2 3 7 2 1 2
+ask 101 1 2 4 0 1 8 3 0 1 2
+ask 102 3 3 4 3 3 4 3 8 1 1
+ask 103 4 4 4 0 3 2 4 4 1 6 3 0 1 2
+bid 1000 4 3 1 7 2 4 1 1 3 0 1 2
+bid 1001 1 4 4 8 2 7 4 6 4 3 3 0 1 2
+bid 1002 2 3 1 8 2 7 3 4 3 0 1 2
+expect welfare 62
+expect volume 12
+expect ranksum 41
+expect prices 3 3 3
+end
+
+case small_149
+items 3
+ask 100 4 1 1 7 1 2
+bid 1000 2 3 1 8 2 6 1 6 3 0 1 2
+bid 1001 1 1 1 5 3 0 1 2
+expect welfare 1
+expect volume 1
+expect ranksum 0
+expect prices 7 7 7
+end

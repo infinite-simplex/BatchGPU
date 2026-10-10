@@ -1,0 +1,4 @@
+# Keep line endings as LF everywhere, so shell scripts and CI behave the same on Windows and Linux.
+* text=auto eol=lf
+*.sh text eol=lf
+*.inst text eol=lf
