@@ -42,12 +42,18 @@ std::size_t BatchProtocolHandler::validateAndParse(const char* buf, std::size_t 
 
     const std::size_t payloadLen = readLength(buf);
     // Refuse now, without waiting for bytes that will never make it parse.
-    if (payloadLen < 1 || payloadLen > MAX_PAYLOAD_SIZE) return PARSE_FATAL_ERROR;
+    if (payloadLen < 2 || payloadLen > MAX_PAYLOAD_SIZE) return PARSE_FATAL_ERROR;
+
+    // The version says how to read the rest, so a frame of another version is refused as soon as it shows.
+    if (availableLen > LENGTH_FIELD_SIZE && static_cast<std::uint8_t>(buf[LENGTH_FIELD_SIZE]) != PROTOCOL_VERSION) {
+        return PARSE_FATAL_ERROR;
+    }
 
     const std::size_t frameLen = LENGTH_FIELD_SIZE + payloadLen;
     if (availableLen < frameLen) return 0;
 
     Reader in(buf + LENGTH_FIELD_SIZE);
+    in.u8(); // the version, checked above
     const char type = static_cast<char>(in.u8());
     outCmd = BatchCommand{}; // the gateway writes trace_id and sessionId after this returns
 
