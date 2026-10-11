@@ -13,30 +13,31 @@
 //
 //     [2 bytes: payload length][payload]
 //
-// The payload is a type byte and then the same body for every type, so a frame is always
-// EVENT_FRAME_SIZE bytes. A field means something only for the types that BatchEvent.hpp lists it under,
-// and is zero otherwise. Every integer is big endian, and the session id, which only routes, is not sent.
+// The payload is a version byte (PROTOCOL_VERSION, see BatchWire.hpp), a type byte and then the same body
+// for every type, so a frame is always EVENT_FRAME_SIZE bytes. A field means something only for the types
+// that BatchEvent.hpp lists it under, and is zero otherwise. Every integer is big endian, and the session
+// id, which only routes, is not sent.
 //
 //   type: 'A' ACCEPTED, 'J' REJECTED, 'C' CANCELED, 'F' FILL, 'D' ORDER_DONE, 'B' BATCH_DONE, 'V' BATCH_VOIDED
 //
 //   offset  size  field             offset  size  field
-//   1       8     sequence number   41      4     hour
-//   9       8     batch id          45      4     price
-//   17      4     participant id    49      4     units
-//   21      8     order token       53      4     unfilled units
-//   29      1     side              57      4     lifted units
-//   30      4     rank              61      8     amount (signed)
-//   34      1     reject reason     69      8     rank sum (signed)
-//   35      2     reject detail     77      4     fills
-//   37      1     accelerator       81      4     bids
-//   38      1     interconnect      85      4     asks
-//   39      1     region            89      4     arcs
-//   40      1     lifted            93      4     pivots
-//                                   97      1     certified
-//                                   98      1     void reason
+//   0       1     version           42      4     hour
+//   1       1     type              46      4     price
+//   2       8     sequence number   50      4     units
+//   10      8     batch id          54      4     unfilled units
+//   18      4     participant id    58      4     lifted units
+//   22      8     order token       62      8     amount (signed)
+//   30      1     side              70      8     rank sum (signed)
+//   31      4     rank              78      4     fills
+//   35      1     reject reason     82      4     bids
+//   36      2     reject detail     86      4     asks
+//   38      1     accelerator       90      4     arcs
+//   39      1     interconnect      94      4     pivots
+//   40      1     region            98      1     certified
+//   41      1     lifted            99      1     void reason
 namespace wire {
 
-inline constexpr std::size_t EVENT_PAYLOAD_SIZE = 99;
+inline constexpr std::size_t EVENT_PAYLOAD_SIZE = 100;
 inline constexpr std::size_t EVENT_FRAME_SIZE = LENGTH_FIELD_SIZE + EVENT_PAYLOAD_SIZE;
 
 inline constexpr EventType EVENT_TYPES[] = { EventType::ACCEPTED,   EventType::REJECTED,   EventType::CANCELED,
@@ -60,6 +61,7 @@ inline std::vector<char> encodeEvent(const BatchEvent& e) {
     std::vector<char> out;
     out.reserve(EVENT_FRAME_SIZE);
     putU16(out, static_cast<std::uint16_t>(EVENT_PAYLOAD_SIZE));
+    putU8(out, PROTOCOL_VERSION);
     putU8(out, static_cast<std::uint8_t>(eventTypeByte(e.type)));
     putU64(out, e.sequence_number);
     putU64(out, e.batchId);
@@ -91,7 +93,7 @@ inline std::vector<char> encodeEvent(const BatchEvent& e) {
 }
 
 // One whole frame, for clients and tests. It says nothing of a value it does not know (a newer reject reason,
-// say), only of a frame that is not one: the wrong size, length or type.
+// say), only of a frame that is not one: the wrong size, length, version or type.
 inline std::optional<BatchEvent> decodeEvent(const char* data, std::size_t size) {
     if (size != EVENT_FRAME_SIZE) return std::nullopt;
     const auto* at = reinterpret_cast<const std::uint8_t*>(data);
@@ -101,6 +103,7 @@ inline std::optional<BatchEvent> decodeEvent(const char* data, std::size_t size)
         return value;
     };
     if (take(2) != EVENT_PAYLOAD_SIZE) return std::nullopt;
+    if (take(1) != PROTOCOL_VERSION) return std::nullopt;
 
     const char typeByte = static_cast<char>(take(1));
     BatchEvent e{};

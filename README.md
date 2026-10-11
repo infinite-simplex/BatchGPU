@@ -51,9 +51,10 @@ for the tests.
   the stateless checks on an order (`OrderChecks.hpp`), and the schedule that turns a
   batch id into the hours it sells (`Schedule.hpp`).
 - `NetworkService/`: the protocol handler, `BatchProtocolHandler`, which Core's gateway
-  calls to turn a client's bytes into a command (`BatchWire.hpp` has the frame layout). It
-  closes a connection on a frame that cannot be read and turns an order that fails a check
-  into an `INVALID` command that says why. `BatchEventFrame.hpp` is the frame that clients get
+  calls to turn a client's bytes into a command (`BatchWire.hpp` has the frame layout, and
+  every frame, in both directions, starts with a protocol version byte). It closes a
+  connection on a frame that cannot be read, one of another version included, and turns an
+  order that fails a check into an `INVALID` command that says why. `BatchEventFrame.hpp` is the frame that clients get
   back, privately for their own orders and on a public feed for everyone. `BatchTicker` is the
   exchange's clock: it sends `BATCH_CLEAR` to the gateway when a clear is due. `NetworkServiceApp`
   is the gateway program: order entry, the sequenced log and its retransmit server, the replicas'

@@ -12,8 +12,9 @@
 //     stateless check comes back as an INVALID command carrying the reason and a detail, and flows on
 //     through the pipeline so the engine refuses it with an event.
 //   - 0: the frame is not all here yet.
-//   - PARSE_FATAL_ERROR: the frame cannot be interpreted at all, and nothing after it on the stream can
-//     be trusted, so the gateway closes the connection.
+//   - PARSE_FATAL_ERROR: the frame cannot be interpreted at all (a length out of range, a protocol version
+//     or a type it does not know, a size that does not fit its type), and nothing after it on the stream
+//     can be trusted, so the gateway closes the connection.
 //
 // A BATCH_CLEAR is accepted whatever its id, and the reserved workload-class byte of an order is read
 // and ignored.

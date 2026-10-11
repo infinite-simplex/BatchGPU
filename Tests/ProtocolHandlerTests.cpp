@@ -59,11 +59,12 @@ std::vector<char> bytes(std::initializer_list<int> values) {
     return out;
 }
 
-std::vector<char> rawFrame(std::uint16_t declaredLength, char type, std::size_t bodyBytes) {
+std::vector<char> rawFrame(std::uint16_t declaredLength, char type) {
     std::vector<char> out;
     wire::putU16(out, declaredLength);
+    out.push_back(static_cast<char>(wire::PROTOCOL_VERSION));
     out.push_back(type);
-    out.insert(out.end(), bodyBytes, 0);
+    out.insert(out.end(), declaredLength > 2 ? declaredLength - 2u : 0u, 0);
     return out;
 }
 
@@ -190,7 +191,22 @@ TEST(ProtocolHandler, CutsTheStreamIntoFramesAndRefusesAFrameThatCanNeverBeValid
     EXPECT_EQ(parse(bytes({ 0, 0, 'O', 'O' }), cmd), FATAL);
 
     for (const char type : { 'Z', 'o', 'x', 'c', '\0', '\x7F', static_cast<char>(0xFF), 'U', 'B', 'A' }) {
-        EXPECT_EQ(parse(rawFrame(5, type, 4), cmd), FATAL) << "type byte " << int(type);
+        EXPECT_EQ(parse(rawFrame(5, type), cmd), FATAL) << "type byte " << int(type);
+    }
+
+    // The version comes first and says how to read the rest: any other is refused, and at once.
+    for (const std::vector<char>& original :
+         { wire::encodeOrder(validBid()), wire::encodeCancel(1, 2), wire::encodeBatchClear(3) }) {
+        ASSERT_EQ(static_cast<std::uint8_t>(original[wire::LENGTH_FIELD_SIZE]), wire::PROTOCOL_VERSION);
+        EXPECT_EQ(parsePrefix(original, wire::LENGTH_FIELD_SIZE + 1, cmd), 0u) << "the right version waits for the rest";
+        for (int version = 0; version < 256; ++version) {
+            if (version == wire::PROTOCOL_VERSION) continue;
+            std::vector<char> frame = original;
+            frame[wire::LENGTH_FIELD_SIZE] = static_cast<char>(version);
+            EXPECT_EQ(parse(frame, cmd), FATAL) << "version " << version;
+            EXPECT_EQ(parsePrefix(frame, wire::LENGTH_FIELD_SIZE + 1, cmd), FATAL)
+                << "version " << version << " with nothing after it";
+        }
     }
 
     struct Shape {
@@ -200,7 +216,7 @@ TEST(ProtocolHandler, CutsTheStreamIntoFramesAndRefusesAFrameThatCanNeverBeValid
     for (const Shape s : { Shape{ wire::ORDER, wire::ORDER_PAYLOAD_SIZE }, Shape{ wire::CANCEL, wire::CANCEL_PAYLOAD_SIZE },
                            Shape{ wire::BATCH_CLEAR, wire::BATCH_CLEAR_PAYLOAD_SIZE } }) {
         for (const std::size_t wrong : { s.right - 1, s.right + 1, std::size_t{ 1 } }) {
-            EXPECT_EQ(parse(rawFrame(static_cast<std::uint16_t>(wrong), s.type, wrong - 1), cmd), FATAL)
+            EXPECT_EQ(parse(rawFrame(static_cast<std::uint16_t>(wrong), s.type), cmd), FATAL)
                 << s.type << " with a payload of " << wrong;
         }
     }
@@ -393,7 +409,7 @@ TEST(ProtocolHandler, GarbageNeverMakesItReadPastWhatItWasGivenOrClaimMoreThanIt
         std::vector<char> data(length);
         for (char& b : data) b = static_cast<char>(rng());
         // Often start from something that looks like a frame, so that the body gets read.
-        if (length >= 3 && shape <= 1) {
+        if (length >= 4 && shape <= 1) {
             const std::size_t payload = shape == 0
                                             ? (type == wire::ORDER   ? wire::ORDER_PAYLOAD_SIZE
                                                : type == wire::CANCEL ? wire::CANCEL_PAYLOAD_SIZE
@@ -401,7 +417,8 @@ TEST(ProtocolHandler, GarbageNeverMakesItReadPastWhatItWasGivenOrClaimMoreThanIt
                                             : length - wire::LENGTH_FIELD_SIZE;
             data[0] = static_cast<char>(payload >> 8);
             data[1] = static_cast<char>(payload);
-            data[2] = type;
+            data[2] = static_cast<char>(wire::PROTOCOL_VERSION);
+            data[3] = type;
         }
         BatchCommand cmd{};
         const std::size_t used = parse(data, cmd);
@@ -473,7 +490,7 @@ TEST(EventFrame, PutsEveryFieldOfEveryEventWhereTheLayoutSaysAndRefusesWhatIsNot
         const BatchEvent e = sample(type);
         const std::vector<char> frame = wire::encodeEvent(e);
         ASSERT_EQ(frame.size(), wire::EVENT_FRAME_SIZE);
-        EXPECT_EQ(frame[2], letters[k++]);
+        EXPECT_EQ(frame[3], letters[k++]);
 
         const std::optional<BatchEvent> back = decode(frame, frame.size());
         ASSERT_TRUE(back);
@@ -493,36 +510,37 @@ TEST(EventFrame, PutsEveryFieldOfEveryEventWhereTheLayoutSaysAndRefusesWhatIsNot
             for (std::size_t i = 0; i < size; ++i) value = (value << 8) | static_cast<std::uint8_t>(frame[2 + offset + i]);
             return value;
         };
-        EXPECT_EQ(static_cast<std::uint8_t>(frame[0]) * 256u + static_cast<std::uint8_t>(frame[1]), 99u)
+        EXPECT_EQ(static_cast<std::uint8_t>(frame[0]) * 256u + static_cast<std::uint8_t>(frame[1]), 100u)
             << "the length of what follows the length";
-        EXPECT_EQ(field(0, 1), 'F');
-        EXPECT_EQ(field(1, 8), e.sequence_number);
-        EXPECT_EQ(field(9, 8), e.batchId);
-        EXPECT_EQ(field(17, 4), e.participantId);
-        EXPECT_EQ(field(21, 8), e.orderToken);
-        EXPECT_EQ(field(29, 1), static_cast<std::uint64_t>('A'));
-        EXPECT_EQ(field(30, 4), e.rank);
-        EXPECT_EQ(field(34, 1), static_cast<std::uint64_t>(RejectReason::BATCH_FULL));
-        EXPECT_EQ(field(35, 2), e.rejectDetail);
-        EXPECT_EQ(field(37, 1), e.accelerator);
-        EXPECT_EQ(field(38, 1), e.interconnect);
-        EXPECT_EQ(field(39, 1), e.region);
-        EXPECT_EQ(field(40, 1), e.lifted);
-        EXPECT_EQ(field(41, 4), e.hour);
-        EXPECT_EQ(field(45, 4), e.price);
-        EXPECT_EQ(field(49, 4), e.units);
-        EXPECT_EQ(field(53, 4), e.unfilledUnits);
-        EXPECT_EQ(field(57, 4), e.liftedUnits);
-        EXPECT_EQ(field(61, 8), static_cast<std::uint64_t>(e.amount));
-        EXPECT_EQ(field(69, 8), static_cast<std::uint64_t>(e.rankSum));
-        EXPECT_EQ(field(77, 4), e.fills);
-        EXPECT_EQ(field(81, 4), e.bids);
-        EXPECT_EQ(field(85, 4), e.asks);
-        EXPECT_EQ(field(89, 4), e.arcs);
-        EXPECT_EQ(field(93, 4), e.pivots);
-        EXPECT_EQ(field(97, 1), e.certified);
-        EXPECT_EQ(field(98, 1), static_cast<std::uint64_t>(VoidReason::SOLVER_ERROR));
-        EXPECT_EQ(wire::EVENT_FRAME_SIZE, 2u + 1u + 98u);
+        EXPECT_EQ(field(0, 1), wire::PROTOCOL_VERSION);
+        EXPECT_EQ(field(1, 1), 'F');
+        EXPECT_EQ(field(2, 8), e.sequence_number);
+        EXPECT_EQ(field(10, 8), e.batchId);
+        EXPECT_EQ(field(18, 4), e.participantId);
+        EXPECT_EQ(field(22, 8), e.orderToken);
+        EXPECT_EQ(field(30, 1), static_cast<std::uint64_t>('A'));
+        EXPECT_EQ(field(31, 4), e.rank);
+        EXPECT_EQ(field(35, 1), static_cast<std::uint64_t>(RejectReason::BATCH_FULL));
+        EXPECT_EQ(field(36, 2), e.rejectDetail);
+        EXPECT_EQ(field(38, 1), e.accelerator);
+        EXPECT_EQ(field(39, 1), e.interconnect);
+        EXPECT_EQ(field(40, 1), e.region);
+        EXPECT_EQ(field(41, 1), e.lifted);
+        EXPECT_EQ(field(42, 4), e.hour);
+        EXPECT_EQ(field(46, 4), e.price);
+        EXPECT_EQ(field(50, 4), e.units);
+        EXPECT_EQ(field(54, 4), e.unfilledUnits);
+        EXPECT_EQ(field(58, 4), e.liftedUnits);
+        EXPECT_EQ(field(62, 8), static_cast<std::uint64_t>(e.amount));
+        EXPECT_EQ(field(70, 8), static_cast<std::uint64_t>(e.rankSum));
+        EXPECT_EQ(field(78, 4), e.fills);
+        EXPECT_EQ(field(82, 4), e.bids);
+        EXPECT_EQ(field(86, 4), e.asks);
+        EXPECT_EQ(field(90, 4), e.arcs);
+        EXPECT_EQ(field(94, 4), e.pivots);
+        EXPECT_EQ(field(98, 1), e.certified);
+        EXPECT_EQ(field(99, 1), static_cast<std::uint64_t>(VoidReason::SOLVER_ERROR));
+        EXPECT_EQ(wire::EVENT_FRAME_SIZE, 2u + 100u);
     }
 
     {
@@ -535,7 +553,7 @@ TEST(EventFrame, PutsEveryFieldOfEveryEventWhereTheLayoutSaysAndRefusesWhatIsNot
         longer.push_back(0);
         EXPECT_FALSE(decode(longer, longer.size()));
 
-        for (const int declared : { 0, 1, 98, 100, 0xFFFF }) {
+        for (const int declared : { 0, 1, 99, 101, 0xFFFF }) {
             std::vector<char> bad = frame;
             bad[0] = static_cast<char>(declared >> 8);
             bad[1] = static_cast<char>(declared);
@@ -544,15 +562,20 @@ TEST(EventFrame, PutsEveryFieldOfEveryEventWhereTheLayoutSaysAndRefusesWhatIsNot
         for (int byte = 0; byte < 256; ++byte) {
             std::vector<char> bad = frame;
             bad[2] = static_cast<char>(byte);
+            EXPECT_EQ(decode(bad, bad.size()).has_value(), byte == wire::PROTOCOL_VERSION) << "version byte " << byte;
+        }
+        for (int byte = 0; byte < 256; ++byte) {
+            std::vector<char> bad = frame;
+            bad[3] = static_cast<char>(byte);
             const bool known = std::find(std::begin(letters), std::end(letters), static_cast<char>(byte)) != std::end(letters);
             EXPECT_EQ(decode(bad, bad.size()).has_value(), known) << "type byte " << byte;
         }
 
         // A value from a newer version of the protocol is passed on as it is.
         std::vector<char> newer = frame;
-        newer[2 + 29] = 'x';
-        newer[2 + 34] = static_cast<char>(200);
-        newer[2 + 98] = static_cast<char>(201);
+        newer[2 + 30] = 'x';
+        newer[2 + 35] = static_cast<char>(200);
+        newer[2 + 99] = static_cast<char>(201);
         const std::optional<BatchEvent> got = decode(newer, newer.size());
         ASSERT_TRUE(got);
         EXPECT_EQ(static_cast<char>(got->side), 'x');
