@@ -14,6 +14,10 @@ leader-elected pipeline (Core v0.1.0, pinned in `CMakeLists.txt`) via CMake
 This is a portfolio project, not a production exchange. It clears and records; it
 does not settle, deliver, verify hardware or take payment.
 
+Design rationale and tradeoffs are written up in the
+[BatchGPU design write-up](https://infinite-simplex.github.io/InfiniteLabs/#BatchGPU).
+The working design notes are in [`docs/DESIGN.md`](docs/DESIGN.md).
+
 ## Status
 
 It runs end to end. The **clearing module** turns a batch of orders into fills and prices.
