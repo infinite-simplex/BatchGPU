@@ -19,8 +19,8 @@ inline constexpr std::uint64_t SECONDS_PER_HOUR = 3600;
 
 inline constexpr std::uint64_t PERIOD_SECONDS = SECONDS_PER_HOUR;
 
-// Placeholder: the nominal time of the clear with id 0, 2026-10-01 00:30:00 UTC. The ticker and every
-// replica must use the same value, because it decides which orders are eligible.
+// The exchange's fixed epoch: the nominal time of the clear with id 0, 2026-10-01 00:30:00 UTC. The
+// ticker and every replica must use the same value, because it decides which orders are eligible.
 inline constexpr std::uint64_t FIRST_CLEAR_SECONDS = 1'790'814'600;
 
 struct Schedule {

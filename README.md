@@ -16,7 +16,6 @@ does not settle, deliver, verify hardware or take payment.
 
 Design rationale and tradeoffs are written up in the
 [BatchGPU design write-up](https://infinite-simplex.github.io/InfiniteLabs/#BatchGPU).
-The working design notes are in [`docs/DESIGN.md`](docs/DESIGN.md).
 
 ## Status
 
