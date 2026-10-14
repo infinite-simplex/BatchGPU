@@ -205,6 +205,9 @@ python3 Tools/Mutation/mutate.py --workers 4
 
 ## Known limits
 
+Replication, leader election and failover belong to Core, so their limits are listed in the
+[ToyExchange](https://github.com/infinite-simplex/ToyExchange) repository. These are BatchGPU's own.
+
 - **No authentication.** The gateway takes the participant id an order claims, and accepts a
   `BATCH_CLEAR` with any batch id from any connection, so anyone who can reach it can trade as
   anyone and trigger or repeat a clear. The results API has none either: it listens on
@@ -213,8 +216,6 @@ python3 Tools/Mutation/mutate.py --workers 4
   restart, so the orders waiting for a clear are lost, and a replica that restarts can rejoin
   only while the gateway's ring still holds the first command. A new solver build is therefore
   a planned down window right after a clear. The results stay in the recorders' files.
-- **Failover is untested.** A leader change, a replica restart and a late join have not been
-  exercised. The exchange test checks only that exactly one replica leads.
 - **Results to clients are best effort.** The replicas reach the gateway over UDP with no
   gap-fill, so a clear that emits more than about 240 events loses the end of them, the
   batch's own result included, on the way to the clients and the public feed. Every result is
