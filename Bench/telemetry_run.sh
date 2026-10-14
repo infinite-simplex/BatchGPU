@@ -7,7 +7,8 @@
 #   Bench/telemetry_run.sh                     10,000 bids and 7,500 asks, two replicas and the recorder
 #   BIDS=2000 ASKS=1500 Bench/telemetry_run.sh another size
 #   REPLICAS=1 Bench/telemetry_run.sh          one replica
-#   NUDGE=0 Bench/telemetry_run.sh             do not send the final cancel that lets the replicas recover lost orders
+#   RECORDERS=2 Bench/telemetry_run.sh         two recorders, whose digests are compared at the end
+#   NUDGE=0 Bench/telemetry_run.sh             do not send the final command that lets the replicas recover lost orders
 #   AFTER_BIDS=0 AFTER_ASKS=0 Bench/telemetry_run.sh   no orders behind the clear (default 1500 bids, 1000 asks)
 #   OUT=run1 Bench/telemetry_run.sh            another output directory (default telemetry_run)
 #   BUILD=./build Bench/telemetry_run.sh       where the build is
@@ -22,13 +23,15 @@ BIDS="${BIDS:-10000}"
 ASKS="${ASKS:-7500}"
 SEED="${SEED:-1}"
 REPLICAS="${REPLICAS:-2}"
+RECORDERS="${RECORDERS:-1}"   # each writes its own results file, and the summary compares them
 # Orders sent straight after the clear, for the next batch. The replicas receive them while the clear is running,
 # so they wait in the replica's queue, which is what InboundQDepth and QueuingDelayNs measure.
 AFTER_BIDS="${AFTER_BIDS:-1500}"
 AFTER_ASKS="${AFTER_ASKS:-1000}"
 # A replica learns that it missed a command only when a later one arrives, so orders lost at its socket while the
 # clear held the queue stay missing until then. With NUDGE=1, one harmless cancel follows the orders and the
-# replicas recover the rest. NUDGE=0 leaves the loss in the logs.
+# replicas recover the rest. NUDGE=clear sends a second clear instead, as the ticker's next one would, and the batch
+# it clears shows whether the recovered orders were in it. NUDGE=0 leaves the loss in the logs.
 NUDGE="${NUDGE:-1}"
 SETTLE="${SETTLE:-4}"   # seconds to let the orders drain before the clear, and the clear's window flush after
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -46,8 +49,8 @@ done
 mkdir -p "$OUT"
 OUT="$(cd "$OUT" && pwd)"
 cd "$OUT" || exit 1
-rm -f network_sequence_store.dat results.sqlite results.sqlite-wal results.sqlite-shm \
-      perf.log replica*.log recorder.log gateway.log client.log load.txt after.txt
+rm -f network_sequence_store.dat results*.sqlite results*.sqlite-wal results*.sqlite-shm \
+      perf.log replica*.log recorder*.log gateway.log client.log load.txt after.txt
 
 pids=()
 cleanup() {
@@ -71,7 +74,9 @@ start() {
 start perf.log "$PERF"
 sleep 0.5
 for id in $(seq 1 "$REPLICAS"); do start "replica$id.log" "$BUILD/MatchingService/MatchingServiceApp" --replica-id "$id"; done
-start recorder.log "$BUILD/Recorder/RecorderApp" --db results.sqlite
+for id in $(seq 1 "$RECORDERS"); do
+  start "recorder$id.log" "$BUILD/Recorder/RecorderApp" --db "results$id.sqlite"
+done
 sleep 1
 start gateway.log "$BUILD/NetworkService/NetworkServiceApp" --no-ticker
 sleep 1.5
@@ -85,6 +90,7 @@ start_ns=$(date +%s%N)
   cat after.txt
   echo "wait $SETTLE"
   if [ "$NUDGE" = 1 ]; then echo "cancel p=1 t=1"; echo "wait $SETTLE"; fi
+  if [ "$NUDGE" = clear ]; then echo "clear"; echo "wait $SETTLE"; fi
   echo "quit"
 } | "$BUILD/Client/BatchClient" --batch 0 > client.log 2>&1
 echo "client exit $?, $(( ($(date +%s%N) - start_ns) / 1000000 )) ms in all" >&2
@@ -96,14 +102,24 @@ for type in ACCEPTED REJECTED FILL ORDER_DONE BATCH_DONE BATCH_VOIDED; do
 done
 echo "(a clear that emits more than about 240 events loses the end of them on the way to the client: see Known limits)" >&2
 
-echo "--- the recorder wrote" >&2
-python3 - results.sqlite >&2 << 'PY'
+echo "--- the recorders wrote" >&2
+python3 - results*.sqlite >&2 << 'PY'
 import sqlite3, sys
-db = sqlite3.connect(f"file:{sys.argv[1]}?mode=ro", uri=True)
-for row in db.execute("select batch_id, status, void_reason, bids, asks, arcs, pivots, units, lifted_units, welfare, "
-                      "fills, certified from batches order by batch_id"):
-    print(dict(zip(("batch", "status", "void", "bids", "asks", "arcs", "pivots", "units", "lifted", "welfare",
-                    "fills", "certified"), row)))
+digests = []
+for path in sorted(sys.argv[1:]):
+    if path.endswith(("-wal", "-shm")):
+        continue
+    db = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
+    print(path)
+    rows = db.execute("select batch_id, status, void_reason, bids, asks, arcs, pivots, units, lifted_units, welfare, "
+                      "fills, certified, hex(digest) from batches order by batch_id").fetchall()
+    for row in rows:
+        print("  batch", dict(zip(("id", "status", "void", "bids", "asks", "arcs", "pivots", "units", "lifted",
+                                   "welfare", "fills", "certified"), row[:-1])), "digest", row[-1][:16])
+    print("  orders per batch", db.execute("select batch_id, count(*) from orders group by 1 order by 1").fetchall(),
+          " open orders", db.execute("select count(*) from open_orders").fetchone()[0])
+    digests.append([(r[0], r[-1]) for r in rows])
+print("recorders agree on every digest:", all(d == digests[0] for d in digests))
 PY
 
 echo "--- $OUT/perf.log" >&2
