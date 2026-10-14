@@ -41,6 +41,7 @@ add_subdirectory(NetworkService)
 add_subdirectory(MatchingService)
 add_subdirectory(Recorder)
 add_subdirectory(ResultsApi)
+add_subdirectory(Client)
 
 add_executable(ClearingBench Bench/ClearingBench.cpp)
 target_link_libraries(ClearingBench PRIVATE Clearing Support Threads::Threads)
