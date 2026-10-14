@@ -219,11 +219,16 @@ python3 Tools/Mutation/mutate.py --workers 4
   gap-fill, so a clear that emits more than about 240 events loses the end of them, the
   batch's own result included, on the way to the clients and the public feed. Every result is
   in the recorder's database and the API, which is where a client asks for one it missed.
-- **A burst behind a clear is lost until the next command.** A replica's inbound queue holds
+- **A burst behind a clear is missing until the next command.** A replica's inbound queue holds
   1,024 commands and the clear holds it while it runs. In the telemetry run (`Bench/telemetry_run.sh`)
   the queue filled, and 1,254 of the 2,500 orders sent right behind the clear reached neither
-  replica until a later command exposed the gap and they were fetched. Most likely the receiver
-  waited for room while its socket buffer overflowed.
+  replica nor either recorder. Most likely the receiver waited for room while its socket buffer
+  overflowed. A receiver sees a gap only when a later command arrives, then fetches the range from
+  the gateway's sequence store and applies it before that command. A second clear did this in the
+  run: the batch it cleared held all 2,500 orders, and two recorders wrote identical digests
+  (`NUDGE=clear RECORDERS=2`). Until a later command arrives the orders are not in the open batch.
+  The hourly clear is such a command. Having the gateway's latest sequence number in the heartbeat
+  reply would close the gap at once, and is a change to Core.
 - **Telemetry is best effort, and Core's histogram has a range.** The performance service's
   histogram for the time inside the engine stops at about 1.07 s, and its counters at
   1,000,000. A longer clear or a larger count is dropped there, without a count.
