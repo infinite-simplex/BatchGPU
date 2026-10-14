@@ -88,6 +88,9 @@ for the tests.
   across batches, the price of a model over the batches, and, only with `--open-orders`, a
   participant's orders in the open batch. Every answer says how far each recorder has got. It
   listens on 127.0.0.1 and has no authentication.
+- `Client/`: `BatchClient`, a command-line order-entry client. It builds its frames with the
+  encoders in `BatchWire.hpp` and reads the events with `BatchEventFrame.hpp`, and takes the
+  catalog and the schedule from the same headers the exchange uses. It is not covered by the tests.
 - `Tests/`: 59 tests, run by `ctest`. Each checks a behavior or a property over a table or a
   stream of cases, not a single case.
   - Clearing: hand-worked batches and tie-breaks, the input it must refuse, every solver
@@ -151,9 +154,20 @@ build/Recorder/RecorderApp --db results.sqlite
 build/NetworkService/NetworkServiceApp
 ```
 
-There is no order-entry client in the repository. `NetworkService/BatchWire.hpp` has the frames
-a client sends, `NetworkService/BatchEventFrame.hpp` the frames it gets back, and
-`Tests/ExchangeTests.cpp` is a working client.
+`Client/BatchClient` is a small order-entry client: type commands, or pipe a script in, and it
+prints every event that comes back. It stays connected from the order to the clear, because the
+results go to the connection that sent the order. To see a batch clear without waiting for the
+half hour, start the gateway with `--no-ticker` and run the demo, which enters an ask and three
+bids and clears them (`help` lists the commands, `catalog` the names and the hours on sale):
+
+```bash
+build/NetworkService/NetworkServiceApp --no-ticker
+build/Client/BatchClient --batch 0        # then type: demo
+```
+
+With the ticker on, leave out `--batch`: the open batch follows the clock, as the ticker's clears
+do, and the client's orders are cleared at the next half hour. The frames the client sends are in
+`NetworkService/BatchWire.hpp`, and the frames it gets back in `NetworkService/BatchEventFrame.hpp`.
 
 The replicas also send one telemetry report for every command to 127.0.0.1:40002
 (`--performance-service-ip`, `--performance-service-port`). Nothing in this repository listens.
