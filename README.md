@@ -123,7 +123,9 @@ for the tests.
   solver and the reference, on uniform, ERCOT-shaped and exchange-shaped batches and on
   batches built to be hard (a few hot items, every price tied, long chains, wide accept
   sets). It lets you change the production solver's arc limit and pivot budget.
-  `run_sweep.sh` runs every cell as its own process under a 30 s kill.
+  `run_sweep.sh` runs every cell as its own process under a 30 s kill. `telemetry_run.sh` runs
+  the whole exchange under one batch with ToyExchange's `PerformanceServiceApp` listening, and
+  `gen_load.py` writes the orders it sends through the client.
 
 ## Building and running
 
@@ -137,6 +139,7 @@ cmake --build build -j
 ctest --test-dir build --output-on-failure
 Bench/run_sweep.sh                 # every cell killed after 30 s, reported as "> 30 s"
 GEN=realistic Bench/run_sweep.sh   # the same sweep on ERCOT-calibrated batches
+Bench/telemetry_run.sh             # 10,000 bids and 7,500 asks through the whole exchange, with telemetry
 ./build/ClearingBench --solver ns --gen dense --one 500 10000 10000 47 50   # a batch built to be hard
 ```
 
@@ -216,6 +219,11 @@ python3 Tools/Mutation/mutate.py --workers 4
   gap-fill, so a clear that emits more than about 240 events loses the end of them, the
   batch's own result included, on the way to the clients and the public feed. Every result is
   in the recorder's database and the API, which is where a client asks for one it missed.
+- **A burst behind a clear is lost until the next command.** A replica's inbound queue holds
+  1,024 commands and the clear holds it while it runs. In the telemetry run (`Bench/telemetry_run.sh`)
+  the queue filled, and 1,254 of the 2,500 orders sent right behind the clear reached neither
+  replica until a later command exposed the gap and they were fetched. Most likely the receiver
+  waited for room while its socket buffer overflowed.
 - **Telemetry is best effort, and Core's histogram has a range.** The performance service's
   histogram for the time inside the engine stops at about 1.07 s, and its counters at
   1,000,000. A longer clear or a larger count is dropped there, without a count.

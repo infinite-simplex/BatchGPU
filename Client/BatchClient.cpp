@@ -299,6 +299,10 @@ public:
                     return 1;
                 }
                 lastActivity = Clock::now();
+                if (!receive()) {
+                    std::cout << "The gateway closed the connection. It does that for a frame it cannot read.\n";
+                    return 1;
+                }
                 if (terminal && lines.empty() && !quit_) std::cout << "> " << std::flush;
             }
             if (quit_) return 0;
@@ -369,23 +373,35 @@ private:
         }
     }
 
-    // False when the gateway has closed the connection.
+    // Reads everything that has arrived and prints it. False when the gateway has closed the connection.
     bool receive() {
-        char buffer[4096];
-        const ssize_t n = ::recv(fd_, buffer, sizeof(buffer), MSG_DONTWAIT);
-        if (n == 0) return false;
-        if (n < 0) return errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR;
-        pending_.insert(pending_.end(), buffer, buffer + n);
-        while (pending_.size() >= wire::EVENT_FRAME_SIZE) {
-            if (const auto event = wire::decodeEvent(pending_.data(), wire::EVENT_FRAME_SIZE)) {
+        bool open = true;
+        for (;;) {
+            char buffer[65536];
+            const ssize_t n = ::recv(fd_, buffer, sizeof(buffer), MSG_DONTWAIT);
+            if (n == 0) {
+                open = false;
+                break;
+            }
+            if (n < 0) {
+                if (errno == EINTR) continue;
+                open = errno == EAGAIN || errno == EWOULDBLOCK;
+                break;
+            }
+            pending_.insert(pending_.end(), buffer, buffer + n);
+        }
+        std::size_t used = 0;
+        while (pending_.size() - used >= wire::EVENT_FRAME_SIZE) {
+            if (const auto event = wire::decodeEvent(pending_.data() + used, wire::EVENT_FRAME_SIZE)) {
                 std::cout << printEvent(*event) << "\n";
             } else {
                 std::cout << "(a frame that is not an event of version " << int{ wire::PROTOCOL_VERSION } << ")\n";
             }
-            pending_.erase(pending_.begin(), pending_.begin() + static_cast<std::ptrdiff_t>(wire::EVENT_FRAME_SIZE));
+            used += wire::EVENT_FRAME_SIZE;
         }
+        pending_.erase(pending_.begin(), pending_.begin() + static_cast<std::ptrdiff_t>(used));
         std::cout << std::flush;
-        return true;
+        return open;
     }
 
     using Args = std::map<std::string, std::string>;
