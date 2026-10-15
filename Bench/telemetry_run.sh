@@ -8,7 +8,6 @@
 #   BIDS=2000 ASKS=1500 Bench/telemetry_run.sh another size
 #   REPLICAS=1 Bench/telemetry_run.sh          one replica
 #   RECORDERS=2 Bench/telemetry_run.sh         two recorders, whose digests are compared at the end
-#   NUDGE=0 Bench/telemetry_run.sh             do not send the final command that lets the replicas recover lost orders
 #   AFTER_BIDS=0 AFTER_ASKS=0 Bench/telemetry_run.sh   no orders behind the clear (default 1500 bids, 1000 asks)
 #   OUT=run1 Bench/telemetry_run.sh            another output directory (default telemetry_run)
 #   BUILD=./build Bench/telemetry_run.sh       where the build is
@@ -25,14 +24,11 @@ SEED="${SEED:-1}"
 REPLICAS="${REPLICAS:-2}"
 RECORDERS="${RECORDERS:-1}"   # each writes its own results file, and the summary compares them
 # Orders sent straight after the clear, for the next batch. The replicas receive them while the clear is running,
-# so they wait in the replica's queue, which is what InboundQDepth and QueuingDelayNs measure.
+# so they wait in the replica's queue, which is what InboundQDepth and QueuingDelayNs measure. The queue holds 1,024
+# commands, so a burst this size overflows the replicas' socket buffers too, and what they miss they fetch from the
+# gateway after 200 ms without a datagram (Core v0.2.0). The summary shows whether every order was recorded.
 AFTER_BIDS="${AFTER_BIDS:-1500}"
 AFTER_ASKS="${AFTER_ASKS:-1000}"
-# A replica learns that it missed a command only when a later one arrives, so orders lost at its socket while the
-# clear held the queue stay missing until then. With NUDGE=1, one harmless cancel follows the orders and the
-# replicas recover the rest. NUDGE=clear sends a second clear instead, as the ticker's next one would, and the batch
-# it clears shows whether the recovered orders were in it. NUDGE=0 leaves the loss in the logs.
-NUDGE="${NUDGE:-1}"
 SETTLE="${SETTLE:-4}"   # seconds to let the orders drain before the clear, and the clear's window flush after
 HERE="$(cd "$(dirname "$0")" && pwd)"
 
@@ -51,6 +47,11 @@ OUT="$(cd "$OUT" && pwd)"
 cd "$OUT" || exit 1
 rm -f network_sequence_store.dat results*.sqlite results*.sqlite-wal results*.sqlite-shm \
       perf.log replica*.log recorder*.log gateway.log client.log load.txt after.txt
+
+# The kernel counts UDP datagrams it dropped because a socket's receive buffer was full, for the whole machine.
+rcvbuf_errors() {
+  awk '/^Udp:/ { if (!seen) { for (i = 1; i <= NF; i++) if ($i == "RcvbufErrors") column = i; seen = 1 } else print $column }' /proc/net/snmp
+}
 
 pids=()
 cleanup() {
@@ -83,18 +84,18 @@ sleep 1.5
 
 echo "sending $(grep -c '^\(bid\|ask\)' load.txt) orders, a clear, and $(grep -c '^\(bid\|ask\)' after.txt) more behind it" >&2
 start_ns=$(date +%s%N)
+dropped_before=$(rcvbuf_errors)
 {
   cat load.txt
   echo "wait $SETTLE"
   echo "clear"
   cat after.txt
   echo "wait $SETTLE"
-  if [ "$NUDGE" = 1 ]; then echo "cancel p=1 t=1"; echo "wait $SETTLE"; fi
-  if [ "$NUDGE" = clear ]; then echo "clear"; echo "wait $SETTLE"; fi
   echo "quit"
 } | "$BUILD/Client/BatchClient" --batch 0 > client.log 2>&1
 echo "client exit $?, $(( ($(date +%s%N) - start_ns) / 1000000 )) ms in all" >&2
 sleep 1
+echo "--- UDP datagrams dropped for a full receive buffer during the run (whole machine): $(( $(rcvbuf_errors) - dropped_before ))" >&2
 
 echo "--- the client saw" >&2
 for type in ACCEPTED REJECTED FILL ORDER_DONE BATCH_DONE BATCH_VOIDED; do

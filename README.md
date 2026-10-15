@@ -7,7 +7,7 @@ accept (a set of GPU models, interconnects, regions and hours), so a buyer who
 would take an A100 or an H100 can be served by either, and the batch clears
 every item at one minimal price. It is built on
 [ToyExchange](https://github.com/infinite-simplex/ToyExchange)'s replicated,
-leader-elected pipeline (Core v0.1.0, pinned in `CMakeLists.txt`) via CMake
+leader-elected pipeline (Core v0.2.0, pinned in `CMakeLists.txt`) via CMake
 `FetchContent`, the same way
 [EventContractLOB](https://github.com/infinite-simplex/EventContractLOB) is.
 
@@ -144,8 +144,9 @@ Bench/telemetry_run.sh             # 10,000 bids and 7,500 asks through the whol
 ```
 
 To run the exchange, start the replicas and the recorder, and then the gateway (Ctrl+C stops
-each). A program that starts after the gateway learns of the commands sent before it only when
-the next command arrives, and then it fills the gap. The gateway takes orders on port 10001 and
+each). A replica or recorder that starts after the gateway catches up from the gateway's log on
+its own, but all of them must be restarted if the gateway is: they take a restarted gateway's
+commands for duplicates and ignore them. The gateway takes orders on port 10001 and
 its ticker sends a clear as soon as it starts and then one at half past each hour; `--no-ticker`
 leaves the clears to a client. Every flag has a default for one machine, and the options are in
 each `main.cpp`.
@@ -212,24 +213,26 @@ Replication, leader election and failover belong to Core, so their limits are li
   `BATCH_CLEAR` with any batch id from any connection, so anyone who can reach it can trade as
   anyone and trigger or repeat a clear. The results API has none either: it listens on
   127.0.0.1, and the open-orders route is off unless it is started with `--open-orders`.
-- **A restart loses the open batch.** Core v0.1.0's sequenced log does not survive a gateway
-  restart, so the orders waiting for a clear are lost, and a replica that restarts can rejoin
-  only while the gateway's ring still holds the first command. A new solver build is therefore
-  a planned down window right after a clear. The results stay in the recorders' files.
+- **A restart loses the open batch.** The gateway's sequenced log does not survive a restart,
+  so the orders waiting for a clear are lost, and the replicas and recorders must be restarted
+  with it. A replica or recorder started or restarted alone catches up from the log, but it
+  replays from the first command, so only while the gateway's ring (1,048,576 commands) still
+  holds it. A new solver build is therefore a planned down window right after a clear. The
+  results stay in the recorders' files.
 - **Results to clients are best effort.** The replicas reach the gateway over UDP with no
   gap-fill, so a clear that emits more than about 240 events loses the end of them, the
   batch's own result included, on the way to the clients and the public feed. Every result is
   in the recorder's database and the API, which is where a client asks for one it missed.
-- **A burst behind a clear is missing until the next command.** A replica's inbound queue holds
-  1,024 commands and the clear holds it while it runs. In the telemetry run (`Bench/telemetry_run.sh`)
-  the queue filled, and 1,254 of the 2,500 orders sent right behind the clear reached neither
-  replica nor either recorder. Most likely the receiver waited for room while its socket buffer
-  overflowed. A receiver sees a gap only when a later command arrives, then fetches the range from
-  the gateway's sequence store and applies it before that command. A second clear did this in the
-  run: the batch it cleared held all 2,500 orders, and two recorders wrote identical digests
-  (`NUDGE=clear RECORDERS=2`). Until a later command arrives the orders are not in the open batch.
-  The hourly clear is such a command. Having the gateway's latest sequence number in the heartbeat
-  reply would close the gap at once, and is a change to Core.
+- **Orders behind a clear wait for it.** A replica's inbound queue holds 1,024 commands and the
+  clear holds it while it runs. In the telemetry runs (`Bench/telemetry_run.sh`) 2,500 orders sent
+  right behind the clear filled the queue and overflowed the replicas' socket buffers (the kernel
+  dropped 5,645 to 17,696 UDP datagrams over five runs, counted for the whole machine). Core
+  v0.2.0 makes a receiver ask the gateway for what it missed after 200 ms without a datagram, so
+  in all five runs every order was recorded and two recorders wrote identical digests
+  (`RECORDERS=2`). The median order reached the engine 0.4 to 0.7 s after the gateway took it,
+  and 1.1 s in the run whose clear took a second. On Core v0.1.0 the same load left 1,254 of the
+  2,500 orders out of the batch until a later command arrived. No run has sent a clear while a
+  burst was still being recovered; a clear that reveals a gap fills it before it is applied.
 - **Telemetry is best effort, and Core's histogram has a range.** The performance service's
   histogram for the time inside the engine stops at about 1.07 s, and its counters at
   1,000,000. A longer clear or a larger count is dropped there, without a count.
