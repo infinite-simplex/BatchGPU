@@ -15,7 +15,7 @@
 #include "BatchProtocolHandler.hpp"
 #include "BatchWire.hpp"
 #include "EngineFixtures.hpp"
-#include "FencedMessage.hpp"
+#include "EgressBatch.hpp"
 #include "NetworkGateway.hpp"
 #include "OrderChecks.hpp"
 #include "OrderFixtures.hpp"
@@ -32,9 +32,10 @@ static_assert(std::is_same_v<decltype(BatchCommand::trace_id), TraceId>, "the ga
 static_assert(std::is_same_v<decltype(BatchCommand::sessionId), SessionId>, "the gateway writes sessionId");
 static_assert(std::is_same_v<decltype(BatchEvent::session_id), SessionId>, "egress routes by session_id");
 static_assert(std::is_trivially_copyable_v<SequencedInboundMessage<BatchCommand>>);
-static_assert(std::is_trivially_copyable_v<FencedMessage<BatchEvent>>);
+static_assert(std::is_trivially_copyable_v<BatchEvent>, "events cross the egress as raw bytes");
 static_assert(sizeof(SequencedInboundMessage<BatchCommand>) <= 1400, "one datagram, no IP fragmentation");
-static_assert(sizeof(FencedMessage<BatchEvent>) <= 1400, "one datagram, no IP fragmentation");
+static_assert(sizeof(EgressBatchHeader) + sizeof(BatchEvent) <= 1400, "an event and its header fit one datagram");
+static_assert(EventsPerEgressDatagram<BatchEvent>(1400) > 1, "an egress datagram carries a batch of events");
 static_assert(std::is_same_v<decltype(std::declval<const BatchProtocolHandler&>().validateAndParse(
                                  static_cast<const char*>(nullptr), std::size_t{}, std::declval<BatchCommand&>())),
                              std::size_t>,

@@ -7,6 +7,7 @@
 #   Bench/telemetry_run.sh                     10,000 bids and 7,500 asks, two replicas and the recorder
 #   BIDS=2000 ASKS=1500 Bench/telemetry_run.sh another size
 #   REPLICAS=1 Bench/telemetry_run.sh          one replica
+#   TUNED=1 Bench/telemetry_run.sh             Core's load settings (spinning receivers, no console echo)
 #   RECORDERS=2 Bench/telemetry_run.sh         two recorders, whose digests are compared at the end
 #   AFTER_BIDS=0 AFTER_ASKS=0 Bench/telemetry_run.sh   no orders behind the clear (default 1500 bids, 1000 asks)
 #   OUT=run1 Bench/telemetry_run.sh            another output directory (default telemetry_run)
@@ -22,6 +23,9 @@ BIDS="${BIDS:-10000}"
 ASKS="${ASKS:-7500}"
 SEED="${SEED:-1}"
 REPLICAS="${REPLICAS:-2}"
+# TUNED=1 uses the settings Core v0.3.0 recommends for load: receivers that spin for 100 us after each datagram, and
+# no console line per event on the gateway. Without it the programs run on Core's defaults.
+TUNED="${TUNED:-0}"
 RECORDERS="${RECORDERS:-1}"   # each writes its own results file, and the summary compares them
 # Orders sent straight after the clear, for the next batch. The replicas receive them while the clear is running,
 # so they wait in the replica's queue, which is what InboundQDepth and QueuingDelayNs measure. The queue holds 1,024
@@ -53,7 +57,30 @@ rcvbuf_errors() {
   awk '/^Udp:/ { if (!seen) { for (i = 1; i <= NF; i++) if ($i == "RcvbufErrors") column = i; seen = 1 } else print $column }' /proc/net/snmp
 }
 
+replica_flags=(); gateway_flags=(--no-ticker)
+# SESSION_BUFFER=<bytes> raises how much unsent output the gateway keeps for the one client (default 1 MiB).
+[ -n "${SESSION_BUFFER:-}" ] && gateway_flags+=(--session-buffer-bytes "$SESSION_BUFFER")
+if [ "$TUNED" = 1 ]; then replica_flags=(--ingress-spin-micros 100); gateway_flags+=(--no-console-echo); fi
+
 pids=()
+
+# Another exchange on this machine shares the ports, the multicast groups and the CPU, which breaks a run or skews
+# its times. Programs of this run are in pids; any other process of these names is someone else's.
+foreign_exchange() {
+  local own
+  own=$(printf '%s
+' "${pids[@]+"${pids[@]}"}" | grep -v '^$')
+  pgrep -f 'MatchingServiceApp|NetworkServiceApp|RecorderApp|PerformanceServiceApp' |
+    grep -vxF -f <(printf '%s
+' "$own" "$$") || true
+}
+if [ -n "$(foreign_exchange)" ] && [ "${FORCE:-0}" != 1 ]; then
+  echo "another exchange is already running on this machine (pids: $(foreign_exchange | tr '
+' ' ')): not starting." >&2
+  echo "Stop it, or set FORCE=1 to run anyway." >&2
+  exit 1
+fi
+
 cleanup() {
   for pid in "${pids[@]}"; do kill -INT "$pid" 2> /dev/null; done
   sleep 1
@@ -74,12 +101,12 @@ start() {
 # gateway, which is the order the README gives.
 start perf.log "$PERF"
 sleep 0.5
-for id in $(seq 1 "$REPLICAS"); do start "replica$id.log" "$BUILD/MatchingService/MatchingServiceApp" --replica-id "$id"; done
+for id in $(seq 1 "$REPLICAS"); do start "replica$id.log" "$BUILD/MatchingService/MatchingServiceApp" --replica-id "$id" ${replica_flags[@]+"${replica_flags[@]}"}; done
 for id in $(seq 1 "$RECORDERS"); do
-  start "recorder$id.log" "$BUILD/Recorder/RecorderApp" --db "results$id.sqlite"
+  start "recorder$id.log" "$BUILD/Recorder/RecorderApp" --db "results$id.sqlite" ${replica_flags[@]+"${replica_flags[@]}"}
 done
 sleep 1
-start gateway.log "$BUILD/NetworkService/NetworkServiceApp" --no-ticker
+start gateway.log "$BUILD/NetworkService/NetworkServiceApp" "${gateway_flags[@]}"
 sleep 1.5
 
 echo "sending $(grep -c '^\(bid\|ask\)' load.txt) orders, a clear, and $(grep -c '^\(bid\|ask\)' after.txt) more behind it" >&2
@@ -95,13 +122,16 @@ dropped_before=$(rcvbuf_errors)
 } | "$BUILD/Client/BatchClient" --batch 0 > client.log 2>&1
 echo "client exit $?, $(( ($(date +%s%N) - start_ns) / 1000000 )) ms in all" >&2
 sleep 1
+[ -z "$(foreign_exchange)" ] || echo "WARNING: another exchange was running during this run: its times and counts are not clean" >&2
 echo "--- UDP datagrams dropped for a full receive buffer during the run (whole machine): $(( $(rcvbuf_errors) - dropped_before ))" >&2
 
 echo "--- the client saw" >&2
 for type in ACCEPTED REJECTED FILL ORDER_DONE BATCH_DONE BATCH_VOIDED; do
   printf '%-13s %s\n' "$type" "$(grep -c "^$type " client.log)" >&2
 done
-echo "(a clear that emits more than about 240 events loses the end of them on the way to the client: see Known limits)" >&2
+echo "--- the gateway's own count (events from the replicas, and output it had to drop for the client)" >&2
+grep "NetworkService egress:" gateway.log >&2 || echo "(not printed)" >&2
+grep "did not receive" gateway.log | tail -1 >&2 || true
 
 echo "--- the recorders wrote" >&2
 python3 - results*.sqlite >&2 << 'PY'

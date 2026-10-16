@@ -44,6 +44,7 @@ int main(int argc, char** argv) {
             else if (arg == "--multicast-port") config.multicastPort = static_cast<uint16_t>(std::stoi(next()));
             else if (arg == "--retransmit-ip") config.retransmitServerIp = next();
             else if (arg == "--retransmit-port") config.retransmitServerPort = static_cast<uint16_t>(std::stoi(next()));
+            else if (arg == "--ingress-spin-micros") config.ingressSpinMicros = static_cast<uint32_t>(std::stoul(next()));
             else if (arg == "--id") name = next();
             else if (arg == "--stats-interval-ms") statsIntervalMs = std::stoi(next());
             else throw std::runtime_error("Unknown argument: " + arg);

@@ -49,6 +49,7 @@ int main(int argc, char** argv) {
             else if (arg == "--egress-ip") config.egressMulticastIp = next();
             else if (arg == "--egress-port") config.egressMulticastPort = static_cast<uint16_t>(std::stoi(next()));
             else if (arg == "--arbitration-port") config.arbitrationPort = static_cast<uint16_t>(std::stoi(next()));
+            else if (arg == "--ingress-spin-micros") config.ingressSpinMicros = static_cast<uint32_t>(std::stoul(next()));
             else if (arg == "--performance-service-ip") config.performanceServiceIp = next();
             else if (arg == "--performance-service-port") config.performanceServicePort = static_cast<uint16_t>(std::stoi(next()));
             else if (arg == "--id") name = next();
