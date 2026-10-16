@@ -236,15 +236,30 @@ public:
     Feed(const Feed&) = delete;
     Feed& operator=(const Feed&) = delete;
 
+    // A datagram holds several frames back to back, so a reader finds the boundaries from each frame's own length.
     void pump() {
-        char buffer[512];
+        char buffer[2048];
         for (;;) {
             const ssize_t n = ::recv(fd_, buffer, sizeof(buffer), MSG_DONTWAIT);
             if (n < 0) break;
-            if (const auto event = wire::decodeEvent(buffer, static_cast<std::size_t>(n))) {
-                events.push_back(*event);
-            } else {
-                ++malformed;
+            const std::size_t size = static_cast<std::size_t>(n);
+            for (std::size_t at = 0; at < size;) {
+                const auto byteAt = [&](std::size_t i) { return static_cast<std::uint8_t>(buffer[at + i]); };
+                if (size - at < wire::LENGTH_FIELD_SIZE) {
+                    ++malformed;
+                    break;
+                }
+                const std::size_t frame = wire::LENGTH_FIELD_SIZE + ((std::size_t{ byteAt(0) } << 8) | byteAt(1));
+                if (frame > size - at) {
+                    ++malformed;
+                    break;
+                }
+                if (const auto event = wire::decodeEvent(buffer + at, frame)) {
+                    events.push_back(*event);
+                } else {
+                    ++malformed;
+                }
+                at += frame;
             }
         }
     }
@@ -352,8 +367,8 @@ std::size_t occurrences(const std::string& text, const std::string& what) {
 TEST(Exchange, EveryPartAgreesFromTheClientsBytesToTheDatabase) {
     if (!multicastLoopsBack()) GTEST_SKIP() << "multicast does not loop back on this machine, and the exchange runs on it";
 
-    // The egress has no gap-fill and holds about 240 events of a burst on a default socket buffer, so the largest
-    // clear here emits 35.
+    // The egress has no gap-fill, and a client can miss part of a large clear (see the README's Known limits), so
+    // the largest clear here emits 35.
 
     // The clients: two buyers, a seller, and the one that sends the clears, as the ticker does. A connection's
     // session is its place in the order they connect.

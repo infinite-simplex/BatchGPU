@@ -117,4 +117,4 @@ struct BatchEvent {
 
 static_assert(std::is_trivially_copyable_v<BatchEvent>, "an event is copied through queues and sent as a datagram");
 static_assert(std::is_standard_layout_v<BatchEvent>, "an event is a plain struct");
-static_assert(sizeof(BatchEvent) <= 128, "an event, wrapped in a FencedMessage, must stay far below one datagram");
+static_assert(sizeof(BatchEvent) <= 128, "an event, with the egress batch header, must stay far below one datagram");

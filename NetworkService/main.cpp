@@ -50,6 +50,8 @@ int main(int argc, char** argv) {
             else if (arg == "--broadcast-port") config.publicBroadcastPort = static_cast<uint16_t>(std::stoi(next()));
             else if (arg == "--arbitration-port") config.arbitrationPort = static_cast<uint16_t>(std::stoi(next()));
             else if (arg == "--no-ticker") runTicker = false;
+            else if (arg == "--no-console-echo") config.egressConsoleEcho = false;
+            else if (arg == "--session-buffer-bytes") config.sessionOutboundBufferBytes = std::stoull(next());
             else throw std::runtime_error("Unknown argument: " + arg);
         }
     } catch (const std::exception& e) {
@@ -89,6 +91,10 @@ int main(int argc, char** argv) {
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
 
+    const EgressStats egress = egressGateway.stats();
+    std::cout << "NetworkService egress: " << egress.events << " events delivered, " << egress.missingEvents
+              << " never arrived from the replicas; client output: " << gateway.droppedOutputBytes()
+              << " bytes dropped, " << gateway.pendingOutputBytes() << " still pending\n";
     std::cout << "NetworkService shutting down...\n";
     ticker.stop();
     egressGateway.stop();

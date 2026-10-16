@@ -13,6 +13,10 @@
 //
 //     [2 bytes: payload length][payload]
 //
+// A public datagram holds as many whole frames as fit in the gateway's egressDatagramMaxBytes, back to back
+// (Core v0.3.0 and later), so a reader of the public feed finds the boundaries from each frame's length field.
+// A private stream is a TCP stream of the same frames.
+//
 // The payload is a version byte (PROTOCOL_VERSION, see BatchWire.hpp), a type byte and then the same body
 // for every type, so a frame is always EVENT_FRAME_SIZE bytes. A field means something only for the types
 // that BatchEvent.hpp lists it under, and is zero otherwise. Every integer is big endian, and the session
