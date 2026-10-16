@@ -30,7 +30,7 @@ RECORDERS="${RECORDERS:-1}"   # each writes its own results file, and the summar
 # Orders sent straight after the clear, for the next batch. The replicas receive them while the clear is running,
 # so they wait in the replica's queue, which is what InboundQDepth and QueuingDelayNs measure. The queue holds 1,024
 # commands, so a burst this size overflows the replicas' socket buffers too, and what they miss they fetch from the
-# gateway after 200 ms without a datagram (Core v0.2.0). The summary shows whether every order was recorded.
+# gateway after 200 ms without a datagram. The summary shows whether every order was recorded.
 AFTER_BIDS="${AFTER_BIDS:-1500}"
 AFTER_ASKS="${AFTER_ASKS:-1000}"
 SETTLE="${SETTLE:-4}"   # seconds to let the orders drain before the clear, and the clear's window flush after
