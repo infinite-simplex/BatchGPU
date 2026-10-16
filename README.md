@@ -149,11 +149,11 @@ its own, but all of them must be restarted if the gateway is: they take a restar
 commands for duplicates and ignore them. The gateway takes orders on port 10001 and
 its ticker sends a clear as soon as it starts and then one at half past each hour; `--no-ticker`
 leaves the clears to a client. Every flag has a default for one machine, and the options are in
-each `main.cpp`. For load, Core v0.3.0 recommends receivers that spin (`--ingress-spin-micros 100`
+each `main.cpp`. For load, Core recommends receivers that spin (`--ingress-spin-micros 100`
 on the replicas and the recorder) and no console line per event (`--no-console-echo` on the
 gateway), with `net.core.rmem_max` at 4 MiB or more on the host; `TUNED=1 Bench/telemetry_run.sh`
 runs with those settings. The replicas, the recorder and the gateway must all be built against the
-same Core version, because the format of the results channel changed in v0.3.0.
+same Core version.
 
 ```bash
 build/MatchingService/MatchingServiceApp --replica-id 1
@@ -224,8 +224,7 @@ Replication, leader election and failover belong to Core, so their limits are li
   holds it. A new solver build is therefore a planned down window right after a clear. The
   results stay in the recorders' files.
 - **Results to clients are best effort.** The replicas reach the gateway over UDP with no
-  gap-fill. Core v0.3.0 batches their results, which fixed the loss of the end of any clear over
-  about 240 events, but a client can still miss some. Across ten telemetry runs of a clear that
+  gap-fill, so a client can miss some of a large clear's results. Across ten telemetry runs of a clear that
   emits about 78,000 events, one client received every event in three and only part in seven; it
   always had the first 17,500 acknowledgements. The gateway's own counters showed no event
   missing from the replicas and no client output dropped, yet it had delivered only 29,560 to
@@ -240,10 +239,8 @@ Replication, leader election and failover belong to Core, so their limits are li
   order was recorded and two recorders wrote identical digests (`RECORDERS=2`). The median order
   reached the engine 0.44 to 0.51 s after the gateway took it. The kernel still dropped 75 to
   1,988 UDP datagrams during those runs, counted for the whole machine, and a receiver fetches
-  what it missed from the gateway after 200 ms without a datagram (Core v0.2.0 and later). On
-  Core v0.1.0 the same load left 1,254 of the 2,500 orders out of the batch until a later command
-  arrived. No run has sent a clear while a burst was still being recovered; a clear that reveals
-  a gap fills it before it is applied.
+  what it missed from the gateway after 200 ms without a datagram. No run has sent a clear while
+  a burst was still being recovered.
 - **Telemetry is best effort, and Core's histogram has a range.** The performance service's
   histogram for the time inside the engine stops at about 1.07 s, and its counters at
   1,000,000. A longer clear or a larger count is dropped there, without a count.
