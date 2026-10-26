@@ -26,11 +26,11 @@ struct Accelerator {
 };
 
 inline constexpr Accelerator ACCELERATORS[] = {
-    { "A100-80GB", Vendor::NVIDIA, 0 },
-    { "H100-80GB", Vendor::NVIDIA, 1 },
-    { "H200-141GB", Vendor::NVIDIA, 2 },
-    { "MI300X-192GB", Vendor::AMD, 0 },
-    { "TPU-v5p", Vendor::GOOGLE, 0 },
+    { .name = "A100-80GB", .vendor = Vendor::NVIDIA, .chainPosition = 0 },
+    { .name = "H100-80GB", .vendor = Vendor::NVIDIA, .chainPosition = 1 },
+    { .name = "H200-141GB", .vendor = Vendor::NVIDIA, .chainPosition = 2 },
+    { .name = "MI300X-192GB", .vendor = Vendor::AMD, .chainPosition = 0 },
+    { .name = "TPU-v5p", .vendor = Vendor::GOOGLE, .chainPosition = 0 },
 };
 
 // One chain, in this order.
@@ -53,7 +53,7 @@ inline constexpr std::size_t INTERCONNECT_MASK_BITS = 8;
 inline constexpr std::size_t REGION_MASK_BITS = 32;
 inline constexpr std::size_t SLOT_MASK_BITS = 64;
 
-constexpr std::size_t optionCount(Attribute a) {
+constexpr std::size_t optionCount(const Attribute a) {
     switch (a) {
     case Attribute::ACCELERATOR: return ACCELERATOR_COUNT;
     case Attribute::INTERCONNECT: return INTERCONNECT_COUNT;
@@ -63,11 +63,11 @@ constexpr std::size_t optionCount(Attribute a) {
     return 0;
 }
 
-constexpr std::uint64_t validBits(std::size_t count) {
+constexpr std::uint64_t validBits(const std::size_t count) {
     return count >= 64 ? ~std::uint64_t{ 0 } : (std::uint64_t{ 1 } << count) - 1;
 }
 
-constexpr int lowestBitOutside(std::uint64_t mask, std::size_t count) {
+constexpr int lowestBitOutside(const std::uint64_t mask, const std::size_t count) {
     const std::uint64_t outside = mask & ~validBits(count);
     return outside == 0 ? -1 : std::countr_zero(outside);
 }
@@ -80,20 +80,20 @@ struct Sku {
     friend constexpr bool operator==(Sku, Sku) = default;
 };
 
-constexpr std::size_t skuIndex(Sku s) {
+constexpr std::size_t skuIndex(const Sku s) {
     return (static_cast<std::size_t>(s.accelerator) * INTERCONNECT_COUNT + s.interconnect) * REGION_COUNT +
            s.region;
 }
 
-constexpr Sku skuFromIndex(std::size_t index) {
-    return Sku{ static_cast<std::uint8_t>(index / (INTERCONNECT_COUNT * REGION_COUNT)),
-                static_cast<std::uint8_t>((index / REGION_COUNT) % INTERCONNECT_COUNT),
-                static_cast<std::uint8_t>(index % REGION_COUNT) };
+constexpr Sku skuFromIndex(const std::size_t index) {
+    return Sku{ .accelerator = static_cast<std::uint8_t>(index / (INTERCONNECT_COUNT * REGION_COUNT)),
+                .interconnect = static_cast<std::uint8_t>((index / REGION_COUNT) % INTERCONNECT_COUNT),
+                .region = static_cast<std::uint8_t>(index % REGION_COUNT) };
 }
 
 // Same region, an interconnect no lower, and an accelerator at or above in the same vendor's chain.
 // Only SKUs of the same hour are comparable, and the caller checks that.
-constexpr bool atLeastAsGood(Sku a, Sku b) {
+constexpr bool atLeastAsGood(const Sku a, const Sku b) {
     if (a.region != b.region) return false;
     if (a.interconnect < b.interconnect) return false;
     const Accelerator& x = ACCELERATORS[a.accelerator];
@@ -101,18 +101,18 @@ constexpr bool atLeastAsGood(Sku a, Sku b) {
     return x.vendor == y.vendor && x.chainPosition >= y.chainPosition;
 }
 
-constexpr bool strictlyBetter(Sku a, Sku b) { return atLeastAsGood(a, b) && !(a == b); }
+constexpr bool strictlyBetter(const Sku a, const Sku b) { return atLeastAsGood(a, b) && a != b; }
 
-constexpr std::uint32_t itemIndex(Sku s, std::size_t slot) {
+constexpr std::uint32_t itemIndex(const Sku s, const std::size_t slot) {
     return static_cast<std::uint32_t>(slot * SKU_COUNT + skuIndex(s));
 }
-constexpr Sku itemSku(std::uint32_t item) { return skuFromIndex(item % SKU_COUNT); }
-constexpr std::size_t itemSlot(std::uint32_t item) { return item / SKU_COUNT; }
+constexpr Sku itemSku(const std::uint32_t item) { return skuFromIndex(item % SKU_COUNT); }
+constexpr std::size_t itemSlot(const std::uint32_t item) { return item / SKU_COUNT; }
 
 // The SKUs named by the product of an order's three masks, as a mask over SKU indices (bit k is
 // SKU k). Bits beyond the catalog are ignored.
-constexpr std::uint64_t skusNamedBy(std::uint64_t acceleratorMask, std::uint64_t interconnectMask,
-                                    std::uint64_t regionMask) {
+constexpr std::uint64_t skusNamedBy(const std::uint64_t acceleratorMask, const std::uint64_t interconnectMask,
+                                    const std::uint64_t regionMask) {
     std::uint64_t skus = 0;
     for (std::size_t a = 0; a < ACCELERATOR_COUNT; ++a) {
         if (((acceleratorMask >> a) & 1) == 0) continue;
@@ -120,7 +120,11 @@ constexpr std::uint64_t skusNamedBy(std::uint64_t acceleratorMask, std::uint64_t
             if (((interconnectMask >> i) & 1) == 0) continue;
             for (std::size_t r = 0; r < REGION_COUNT; ++r) {
                 if (((regionMask >> r) & 1) == 0) continue;
-                const Sku s{ static_cast<std::uint8_t>(a), static_cast<std::uint8_t>(i), static_cast<std::uint8_t>(r) };
+                const Sku s{
+                    .accelerator = static_cast<std::uint8_t>(a),
+                    .interconnect = static_cast<std::uint8_t>(i),
+                    .region = static_cast<std::uint8_t>(r)
+                };
                 skus |= std::uint64_t{ 1 } << skuIndex(s);
             }
         }
@@ -147,7 +151,7 @@ inline constexpr std::array<std::uint64_t, SKU_COUNT> STRICTLY_BELOW = detail::m
 
 // A unit awarded at this SKU is lifted when the order accepts some SKU strictly below it.
 // Comparing SKUs without looking at the hour is safe because an order repeats its SKUs in every hour.
-constexpr bool isLifted(Sku awarded, std::uint64_t acceptedSkus) {
+constexpr bool isLifted(const Sku awarded, const std::uint64_t acceptedSkus) {
     return (STRICTLY_BELOW[skuIndex(awarded)] & acceptedSkus) != 0;
 }
 
@@ -162,16 +166,16 @@ constexpr bool sameName(const char* a, const char* b) {
 }
 
 constexpr bool chainsAreWellFormed() {
-    for (std::size_t i = 0; i < ACCELERATOR_COUNT; ++i) {
+    for (const auto i : ACCELERATORS) {
         std::size_t sameVendor = 0;
         std::size_t samePosition = 0;
-        for (std::size_t j = 0; j < ACCELERATOR_COUNT; ++j) {
-            if (ACCELERATORS[j].vendor != ACCELERATORS[i].vendor) continue;
+        for (const auto j : ACCELERATORS) {
+            if (j.vendor != i.vendor) continue;
             ++sameVendor;
-            if (ACCELERATORS[j].chainPosition == ACCELERATORS[i].chainPosition) ++samePosition;
+            if (j.chainPosition == i.chainPosition) ++samePosition;
         }
         if (samePosition != 1) return false;
-        if (ACCELERATORS[i].chainPosition >= sameVendor) return false;
+        if (i.chainPosition >= sameVendor) return false;
     }
     return true;
 }

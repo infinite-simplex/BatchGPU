@@ -42,13 +42,13 @@ public:
     static constexpr std::int8_t LOWER = 1;
 
     struct Arc {
-        std::uint32_t from;
-        std::uint32_t to;
+        std::uint32_t from{};
+        std::uint32_t to{};
         LexCost cost;
-        std::int64_t cap;
-        std::int64_t flow;
-        std::int8_t state;
-        bool artificial;
+        std::int64_t cap{};
+        std::int64_t flow{};
+        std::int8_t state{};
+        bool artificial{};
     };
 
     struct OptimizeResult {
@@ -69,10 +69,10 @@ public:
     OptimizeResult optimize(std::uint64_t maxPivots = std::numeric_limits<std::uint64_t>::max(),
                             bool selfCheck = false);
 
-    const Arc& arc(ArcId id) const { return arcs_[id]; }
-    std::size_t arcCount() const { return arcs_.size(); }
-    std::uint64_t totalPivots() const { return pivots_; }
-    const LexCost& potential(NodeId node) const { return pi_[node]; }
+    [[nodiscard]] const Arc& arc(const ArcId id) const { return arcs_[id]; }
+    [[nodiscard]] std::size_t arcCount() const { return arcs_.size(); }
+    [[nodiscard]] std::uint64_t totalPivots() const { return pivots_; }
+    [[nodiscard]] const LexCost& potential(const NodeId node) const { return pi_[node]; }
 
     // The optimality certificate. Throws std::logic_error unless the flow respects every bound and
     // conserves flow at every node, and the potentials satisfy complementary slackness on every arc:
@@ -81,7 +81,7 @@ public:
     // bookkeeping cannot produce a wrong answer that passes. One pass over the arcs, valid only after
     // optimize() returned an optimal result. Returns true when it returns at all, so that a caller can
     // record that the check ran.
-    bool checkCertificate() const {
+    [[nodiscard]] bool checkCertificate() const {
         verifyCertificate(arcs_, pi_);
         return true;
     }

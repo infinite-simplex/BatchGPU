@@ -21,14 +21,14 @@ struct ClearingOptions {
 // The batch is too hard for the pivot budget. Every replica reaches this at the same pivot.
 class ClearingBudgetExceeded : public std::runtime_error {
 public:
-    ClearingBudgetExceeded(std::uint64_t pivots, std::uint64_t arcs)
+    ClearingBudgetExceeded(const std::uint64_t pivots, const std::uint64_t arcs)
         : std::runtime_error("clear(): stopped after " + std::to_string(pivots) + " pivots on a graph of " +
                              std::to_string(arcs) + " arcs, over the pivot budget"),
           pivots_(pivots),
           arcs_(arcs) {}
 
-    std::uint64_t pivots() const { return pivots_; }
-    std::uint64_t arcs() const { return arcs_; }
+    [[nodiscard]] std::uint64_t pivots() const { return pivots_; }
+    [[nodiscard]] std::uint64_t arcs() const { return arcs_; }
 
 private:
     std::uint64_t pivots_;

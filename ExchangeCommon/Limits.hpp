@@ -26,7 +26,7 @@ inline constexpr std::size_t MAX_ORDERS_PER_SIDE = 10'000;
 // Cancelled orders count, so a submit-and-cancel loop cannot grow ranks without bound. An
 // order's rank is the number of orders its side accepted before it, so the largest is one less.
 inline constexpr std::size_t MAX_SUBMISSIONS_PER_SIDE = 100'000;
-inline constexpr std::uint32_t MAX_RANK = static_cast<std::uint32_t>(MAX_SUBMISSIONS_PER_SIDE - 1);
+inline constexpr std::uint32_t MAX_RANK = MAX_SUBMISSIONS_PER_SIDE - 1;
 
 // An ask names one GPU, interconnect and region, so it offers at most SLOT_WINDOW items.
 inline constexpr std::uint64_t MAX_ITEMS_PER_BATCH = MAX_ORDERS_PER_SIDE * SLOT_WINDOW;

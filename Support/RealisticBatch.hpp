@@ -8,14 +8,13 @@
 #include "SyntheticBatch.hpp"
 
 // Calibrated to ERCOT's day-ahead order books, a real batch auction over hourly products with stepped
-// curve bids. The numbers each constant comes from are noted beside it, and the calibration test checks
-// that the output stays inside the ERCOT ranges. What the data fixes, and what it does not:
+// curve bids.
 //
 //   Fixed by ERCOT   steps per curve, the heavy tail of order sizes, how often prices tie, how orders
 //                    crowd onto a few locations, the share of orders that trade.
 //   NOT fixed        how many items a compute order accepts (every ERCOT order names one location),
 //                    how orders arrive and are cancelled over time (the files hold only the final
-//                    bids), and how compute buyers behave. Those are parameters here, not facts.
+//                    bids), and how compute buyers behave.
 //
 // Unlike SyntheticBatch.hpp this uses <cmath>, so a batch can differ in the last bit of a price or a
 // size between standard libraries. That does not matter for statistics, but a test must not compare
