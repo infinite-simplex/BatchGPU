@@ -52,9 +52,9 @@ Flow makeFlow(typename Flow::NodeId nodeCount, const ClearingOptions& options) {
 template <typename Flow>
 ClearingResult clearWith(const ClearingInput& input, const ClearingOptions& options = {}) {
     using Clock = std::chrono::steady_clock;
-    using NodeId = typename Flow::NodeId;
-    using ArcId = typename Flow::ArcId;
-    auto microsSince = [](Clock::time_point start) {
+    using NodeId = Flow::NodeId;
+    using ArcId = Flow::ArcId;
+    auto microsSince = [](const Clock::time_point start) {
         return static_cast<std::uint64_t>(
             std::chrono::duration_cast<std::chrono::microseconds>(Clock::now() - start).count());
     };
@@ -65,10 +65,10 @@ ClearingResult clearWith(const ClearingInput& input, const ClearingOptions& opti
     const std::size_t bidCount = input.bids.size();
     const std::size_t askCount = input.asks.size();
 
-    auto askRank = [&](std::size_t a) {
+    auto askRank = [&](const std::size_t a) {
         return static_cast<std::int64_t>(input.askRank.empty() ? a : input.askRank[a]);
     };
-    auto bidRank = [&](std::size_t b) {
+    auto bidRank = [&](const std::size_t b) {
         return static_cast<std::int64_t>(input.bidRank.empty() ? b : input.bidRank[b]);
     };
 
@@ -92,7 +92,7 @@ ClearingResult clearWith(const ClearingInput& input, const ClearingOptions& opti
         const NodeId node = firstAsk + static_cast<NodeId>(a);
         const std::int64_t rank = askRank(a);
         for (std::size_t k = 0; k < ask.stepCount; ++k) {
-            const LexCost cost{ static_cast<std::int64_t>(ask.steps[k].price), rank };
+            const LexCost cost{ .primary = ask.steps[k].price, .secondary = rank };
             askStepArcs[a].push_back(flow.addArc(source, node, ask.steps[k].quantity, cost));
         }
         for (std::size_t p = 0; p < ask.items.size(); ++p) {
@@ -107,7 +107,7 @@ ClearingResult clearWith(const ClearingInput& input, const ClearingOptions& opti
             bidItemArcs[b].push_back(flow.addArc(firstItem + bid.items[p], node, bid.perSlotCap, LexCost{}));
         }
         for (std::size_t k = 0; k < bid.stepCount; ++k) {
-            const LexCost cost{ -static_cast<std::int64_t>(bid.steps[k].price), rank };
+            const LexCost cost{ .primary = -static_cast<std::int64_t>(bid.steps[k].price), .secondary = rank };
             bidStepArcs[b].push_back(flow.addArc(node, sink, bid.steps[k].quantity, cost));
         }
     }
@@ -130,7 +130,11 @@ ClearingResult clearWith(const ClearingInput& input, const ClearingOptions& opti
         for (std::size_t p = 0; p < ask.items.size(); ++p) {
             const std::int64_t units = flow.flowOn(askItemArcs[a][p]);
             if (units > 0) {
-                result.askFills.push_back({ ask.id, ask.items[p], static_cast<NodeUnits>(units) });
+                result.askFills.push_back({
+                    .order = ask.id,
+                    .item = ask.items[p],
+                    .units = static_cast<NodeUnits>(units)
+                });
             }
         }
         for (std::size_t k = 0; k < ask.stepCount; ++k) {
@@ -144,7 +148,11 @@ ClearingResult clearWith(const ClearingInput& input, const ClearingOptions& opti
         for (std::size_t p = 0; p < bid.items.size(); ++p) {
             const std::int64_t units = flow.flowOn(bidItemArcs[b][p]);
             if (units > 0) {
-                result.bidFills.push_back({ bid.id, bid.items[p], static_cast<NodeUnits>(units) });
+                result.bidFills.push_back({
+                    .order = bid.id,
+                    .item = bid.items[p],
+                    .units = static_cast<NodeUnits>(units)
+                });
                 result.itemUnits[bid.items[p]] += static_cast<NodeUnits>(units);
             }
         }

@@ -9,13 +9,13 @@ struct LexCost {
     std::int64_t primary{ 0 };
     std::int64_t secondary{ 0 };
 
-    friend constexpr LexCost operator+(LexCost a, LexCost b) {
-        return { a.primary + b.primary, a.secondary + b.secondary };
+    friend constexpr LexCost operator+(const LexCost a, const LexCost b) {
+        return { .primary = a.primary + b.primary, .secondary = a.secondary + b.secondary };
     }
-    friend constexpr LexCost operator-(LexCost a, LexCost b) {
-        return { a.primary - b.primary, a.secondary - b.secondary };
+    friend constexpr LexCost operator-(const LexCost a, const LexCost b) {
+        return { .primary = a.primary - b.primary, .secondary = a.secondary - b.secondary };
     }
-    friend constexpr LexCost operator-(LexCost a) { return { -a.primary, -a.secondary }; }
+    friend constexpr LexCost operator-(const LexCost a) { return { .primary = -a.primary, .secondary = -a.secondary }; }
 
     // Compares in declaration order, so the order of the members matters.
     friend constexpr auto operator<=>(const LexCost&, const LexCost&) = default;

@@ -48,11 +48,11 @@ enum class QuotaLimit : std::uint8_t {
 
 // The detail of a reject that names a mask: the attribute in the high byte and a bit in the
 // low byte. The bit is 0 when the reject does not point at one.
-constexpr std::uint16_t maskDetail(catalog::Attribute attribute, unsigned bit) {
+constexpr std::uint16_t maskDetail(catalog::Attribute attribute, const unsigned bit) {
     return static_cast<std::uint16_t>((static_cast<unsigned>(attribute) << 8) | (bit & 0xFFu));
 }
 
-constexpr const char* toString(RejectReason reason) {
+constexpr const char* toString(const RejectReason reason) {
     switch (reason) {
     case RejectReason::NONE: return "NONE";
     case RejectReason::BAD_SIDE: return "BAD_SIDE";
