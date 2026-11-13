@@ -111,10 +111,6 @@ for the tests.
     process on the same bytes, and the telemetry that each replica forwards.
   - The API: the HTTP reader, the JSON writer, every endpoint against the files it serves, and
     clients that go wrong (malformed, oversized, stalled, many at once).
-- `Tools/Mutation/`: `plants.py` lists 46 one-line changes to the source, each of which some
-  test must notice, and `mutate.py` plants them one at a time in a private copy of the tree,
-  rebuilds, runs every test and reports any that no test caught. The 13 newest tests (the
-  recorder, the event frame, the ticker, the whole exchange and the API) have no plants.
 - `Support/`: batch generators. `SyntheticBatch.hpp` is uniform and integer-only.
   `RealisticBatch.hpp` is calibrated to five days of ERCOT's day-ahead order books, a real
   batch auction with curve bids. `WindowBatch.hpp` has the item structure of this exchange:
@@ -201,17 +197,11 @@ curl localhost:8080/participants/101/orders
 curl localhost:8080/participants/101/open_orders            # 403 unless started with --open-orders
 ```
 
-To check that the tests can fail, plant the bugs in `Tools/Mutation/plants.py` one at a time
-(it works on copies of the tree, builds each, and takes a while):
-
-```bash
-python3 Tools/Mutation/mutate.py --workers 4
-```
-
 ## Known limits
 
 Replication, leader election and failover belong to Core, so their limits are listed in the
-[ToyExchange](https://github.com/infinite-simplex/ToyExchange) repository. These are BatchGPU's own.
+[ToyExchange README](https://github.com/infinite-simplex/ToyExchange#known-limits). These are
+BatchGPU's own.
 
 - **No authentication.** The gateway takes the participant id an order claims, and accepts a
   `BATCH_CLEAR` with any batch id from any connection, so anyone who can reach it can trade as
