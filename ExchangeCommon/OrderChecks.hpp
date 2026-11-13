@@ -70,9 +70,9 @@ constexpr Reject checkOrder(const BatchCommand& c) {
     for (std::size_t k = 0; k < c.stepCount; ++k) {
         const CurveStep& step = c.steps[k];
         const auto index = static_cast<std::uint16_t>(k);
-        if (t == 0) return { .reason = RejectReason::STEP_QUANTITY_ZERO, .detail = index };
+        if (step.quantity == 0) return { .reason = RejectReason::STEP_QUANTITY_ZERO, .detail = index };
         if (step.price > limits::MAX_PRICE_TICKS) return { RejectReason::STEP_PRICE_OVER_MAX, index };
-        if (t > limits::MAX_ORDER_UNITS) return { RejectReason::STEP_QUANTITY_OVER_MAX, index };
+        if (step.quantity > limits::MAX_ORDER_UNITS) return { RejectReason::STEP_QUANTITY_OVER_MAX, index };
         if (k > 0) {
             const PriceTicks before = c.steps[k - 1].price;
             const bool breaksOrder = c.side == Side::BID ? step.price > before : step.price < before;
