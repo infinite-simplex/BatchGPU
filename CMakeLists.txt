@@ -15,8 +15,8 @@ include(FetchContent)
 # Pinned to a release tag so a Core change can never silently move this repo.
 FetchContent_Declare(
   Core
-  GIT_REPOSITORY https://github.com/infinite-simplex/ToyExchange.git
-  GIT_TAG v0.3.0
+  GIT_REPOSITORY https://github.com/infinite-simplex/DisruptorExchange.git
+  GIT_TAG v0.1.0
   SOURCE_SUBDIR Core
 )
 FetchContent_MakeAvailable(Core)

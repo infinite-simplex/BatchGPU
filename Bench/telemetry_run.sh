@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The whole exchange under one batch, with ToyExchange's PerformanceServiceApp listening: the replicas, the
+# The whole exchange under one batch, with DisruptorExchange's PerformanceServiceApp listening: the replicas, the
 # recorder and the gateway as programs on real sockets, one client sending a batch of orders, then a clear.
 # The replicas forward a telemetry trace for every command, and the performance service prints percentiles
 # for each second. The output is a directory of logs.
@@ -23,7 +23,7 @@ BIDS="${BIDS:-10000}"
 ASKS="${ASKS:-7500}"
 SEED="${SEED:-1}"
 REPLICAS="${REPLICAS:-2}"
-# TUNED=1 uses the settings Core v0.3.0 recommends for load: receivers that spin for 100 us after each datagram, and
+# TUNED=1 uses the settings Core recommends for load: receivers that spin for 100 us after each datagram, and
 # no console line per event on the gateway. Without it the programs run on Core's defaults.
 TUNED="${TUNED:-0}"
 RECORDERS="${RECORDERS:-1}"   # each writes its own results file, and the summary compares them

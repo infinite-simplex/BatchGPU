@@ -6,8 +6,8 @@ A GPU compute exchange that clears in hourly batches. A bid names what it can
 accept (a set of GPU models, interconnects, regions and hours), so a buyer who
 would take an A100 or an H100 can be served by either, and the batch clears
 every item at one minimal price. It is built on
-[ToyExchange](https://github.com/infinite-simplex/ToyExchange)'s replicated,
-leader-elected pipeline (Core v0.3.0, pinned in `CMakeLists.txt`) via CMake
+[DisruptorExchange](https://github.com/infinite-simplex/DisruptorExchange)'s replicated,
+leader-elected pipeline (Core v0.1.0, pinned in `CMakeLists.txt`) via CMake
 `FetchContent`, the same way
 [EventContractLOB](https://github.com/infinite-simplex/EventContractLOB) is.
 
@@ -120,7 +120,7 @@ for the tests.
   batches built to be hard (a few hot items, every price tied, long chains, wide accept
   sets). It lets you change the production solver's arc limit and pivot budget.
   `run_sweep.sh` runs every cell as its own process under a 30 s kill. `telemetry_run.sh` runs
-  the whole exchange under one batch with ToyExchange's `PerformanceServiceApp` listening, and
+  the whole exchange under one batch with DisruptorExchange's `PerformanceServiceApp` listening, and
   `gen_load.py` writes the orders it sends through the client.
 
 ## Building and running
@@ -175,7 +175,7 @@ do, and the client's orders are cleared at the next half hour. The frames the cl
 
 The replicas also send one telemetry report for every command to 127.0.0.1:40002
 (`--performance-service-ip`, `--performance-service-port`). Nothing in this repository listens.
-ToyExchange's `PerformanceServiceApp`, which is built in that repository, does, and prints the
+DisruptorExchange's `PerformanceServiceApp`, which is built in that repository, does, and prints the
 delays, the queue depth, the time inside the engine and the clear's statistics as percentiles
 for each second.
 
@@ -200,7 +200,7 @@ curl localhost:8080/participants/101/open_orders            # 403 unless started
 ## Known limits
 
 Replication, leader election and failover belong to Core, so their limits are listed in the
-[ToyExchange README](https://github.com/infinite-simplex/ToyExchange#known-limits). These are
+[DisruptorExchange README](https://github.com/infinite-simplex/DisruptorExchange#known-limits). These are
 BatchGPU's own.
 
 - **No authentication.** The gateway takes the participant id an order claims, and accepts a
@@ -225,7 +225,7 @@ BatchGPU's own.
 - **Orders behind a clear wait for it.** A replica's inbound queue holds 1,024 commands and the
   clear holds it while it runs. In the telemetry runs (`Bench/telemetry_run.sh`) 2,500 orders sent
   right behind the clear fill the queue, and the receiver stops reading until the clear ends, so
-  they wait in its socket buffer. With Core v0.3.0's 4 MiB buffer they fit: in all ten runs every
+  they wait in its socket buffer. With Core's 4 MiB buffer (the ten runs used Core commit `dae895b`) they fit: in all ten runs every
   order was recorded and two recorders wrote identical digests (`RECORDERS=2`). The median order
   reached the engine 0.44 to 0.51 s after the gateway took it. The kernel still dropped 75 to
   1,988 UDP datagrams during those runs, counted for the whole machine, and a receiver fetches
